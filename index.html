@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bindex – Profesyonel Yapay Zekâ Platformu</title>
+  <meta name="description" content="Diğerleri tahmin eder, Bindex doğruyu bilir. Profesyonel, modern, hızlı ve bağımsız AI platformu.">
+
+  <!-- Harici CDN Kütüphaneleri -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.1/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* ==============================================================================
+       1. TEMA VE TEMEL TASARIM
+       ============================================================================== */
+    :root {
+      --bg-primary: #0B0F19;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1E293B;
+      --bg-hover: #334155;
+      --bg-input: #1E293B;
+      --bg-card: rgba(30, 41, 59, 0.7);
+
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+
+      --border-color: #334155;
+      --border-subtle: #1E293B;
+      --border-glow: rgba(59, 130, 246, 0.4);
+
+      --accent-blue: #3B82F6;
+      --accent-purple: #8B5CF6;
+      --accent-pink: #EC4899;
+      --accent-green: #10B981;
+      --accent-red: #EF4444;
+
+      --gradient-brand: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #EC4899 100%);
+      --gradient-button: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+      --gradient-button-hover: linear-gradient(135deg, #1D4ED8 0%, #6D28D9 100%);
+
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+
+      --sidebar-width: 290px;
+      --canvas-width: 50%;
+      --header-height: 56px;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #F8FAFC;
+      --bg-secondary: #FFFFFF;
+      --bg-tertiary: #F1F5F9;
+      --bg-hover: #E2E8F0;
+      --bg-input: #FFFFFF;
+      --bg-card: rgba(255, 255, 255, 0.9);
+
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #94A3B8;
+
+      --border-color: #E2E8F0;
+      --border-subtle: #CBD5E1;
+      --border-glow: rgba(59, 130, 246, 0.3);
+
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      position: relative;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: inherit;
+      font-family: inherit;
+      font-size: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2;
+      stroke: currentColor;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: var(--radius-full);
+    }
+
+    .gradient-text {
+      background: var(--gradient-brand);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ==============================================================================
+       2. SOL MENÜ (SIDEBAR) & KOTA BÖLÜMÜ
+       ============================================================================== */
+    #sidebar {
+      width: var(--sidebar-width);
+      height: 100%;
+      background-color: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 20;
+    }
+
+    #sidebar.collapsed {
+      width: 0;
+      overflow: hidden;
+      border-right: none;
+    }
+
+    .sidebar-header {
+      padding: 16px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
+    }
+
+    .brand-name {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+
+    .brand-slogan {
+      font-size: 10px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .sidebar-actions {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-new-chat {
+      width: 100%;
+      padding: 11px 16px;
+      background: var(--gradient-button);
+      color: #FFFFFF;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-new-chat:hover {
+      background: var(--gradient-button-hover);
+      transform: translateY(-1px);
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .sidebar-history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .history-item:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .history-item.active {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+      font-weight: 500;
+    }
+
+    .history-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .history-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .history-actions {
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .history-item:hover .history-actions,
+    .history-item.active .history-actions {
+      display: flex;
+    }
+
+    .btn-hist-act {
+      padding: 3px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+    .btn-hist-act:hover { color: var(--text-primary); }
+    .btn-hist-act.del:hover { color: var(--accent-red); }
+
+    /* MODEL KOTALARI KARTI (SIDEBAR İÇİNDE) */
+    .quota-section {
+      padding: 12px 14px;
+      background-color: var(--bg-tertiary);
+      margin: 6px 10px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .quota-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .quota-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      cursor: pointer;
+      padding: 5px 6px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .quota-item:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    .quota-item.active-model {
+      background-color: rgba(59, 130, 246, 0.15);
+      border: 1px solid var(--accent-blue);
+    }
+
+    .quota-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .quota-progress-track {
+      width: 100%;
+      height: 4px;
+      background: var(--bg-secondary);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .quota-progress-bar {
+      height: 100%;
+      background: var(--accent-blue);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    .quota-progress-bar.warning { background: #EAB308; }
+    .quota-progress-bar.exhausted { background: var(--accent-red); }
+
+    .sidebar-footer {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: var(--bg-secondary);
+    }
+
+    /* ==============================================================================
+       3. ORTA ANA SOHBET ALANI
+       ============================================================================== */
+    #main-chat-area {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background-color: var(--bg-primary);
+      overflow: hidden;
+    }
+
+    .chat-topbar {
+      height: var(--header-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-primary);
+      z-index: 5;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #messages-scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 16px 160px 16px;
+      scroll-behavior: smooth;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .messages-inner-container {
+      width: 100%;
+      max-width: 840px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Karşılama Ekranı */
+    .welcome-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 50vh;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .welcome-logo {
+      width: 76px;
+      height: 76px;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 24px rgba(59, 130, 246, 0.45));
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .welcome-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+
+    .welcome-slogan {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      font-weight: 500;
+    }
+
+    .suggestion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .suggestion-card {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .suggestion-card:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .suggestion-icon { font-size: 20px; }
+    .suggestion-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .suggestion-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.4; }
+
+    /* Mesaj Kartları */
+    .message-row {
+      display: flex;
+      gap: 14px;
+      width: 100%;
+      animation: messageIn 0.25s ease-out forwards;
+    }
+
+    @keyframes messageIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message-row.user { justify-content: flex-end; }
+
+    .message-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .message-avatar.model {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+    }
+
+    .message-avatar.user {
+      background: var(--gradient-brand);
+      color: #FFFFFF;
+    }
+
+    .message-content-wrapper {
+      max-width: 84%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .message-row.user .message-content-wrapper {
+      align-items: flex-end;
+    }
+
+    .message-bubble {
+      padding: 12px 18px;
+      border-radius: var(--radius-lg);
+      font-size: 15px;
+      line-height: 1.65;
+      word-break: break-word;
+    }
+
+    .message-row.user .message-bubble {
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-top-right-radius: 4px;
+    }
+
+    .message-row.model .message-bubble {
+      background-color: transparent;
+      padding: 4px 0;
+    }
+
+    .message-stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .streaming-cursor {
+      display: inline-block;
+      width: 7px;
+      height: 16px;
+      background: var(--accent-blue);
+      vertical-align: middle;
+      margin-left: 4px;
+      animation: blink 0.8s infinite;
+      border-radius: 1px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    /* Mesaj İçindeki Ekli Görsel / Dosya */
+    .attached-media-preview {
+      max-width: 240px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      border: 1px solid var(--border-color);
+    }
+    .attached-media-preview img {
+      width: 100%;
+      display: block;
+    }
+
+    /* Kod Blokları & Canvas Entegrasyonu */
+    .code-block-container {
+      margin: 16px 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      background-color: #0D1117;
+      box-shadow: var(--shadow-md);
+    }
+
+    .code-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background-color: #161B22;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12.5px;
+      color: #8B949E;
+    }
+
+    .code-language-tag {
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .code-block-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-code-action {
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: #C9D1D9;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-code-action:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+    }
+
+    .btn-open-canvas {
+      background: var(--gradient-button);
+      color: #FFFFFF !important;
+      font-weight: 600;
+    }
+
+    .code-block-container pre {
+      padding: 16px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #E6EDF3;
+    }
+
+    /* Markdown Tablo ve Alıntılar */
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    .markdown-body th, .markdown-body td {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+    }
+    .markdown-body th {
+      background-color: var(--bg-tertiary);
+      font-weight: 600;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid var(--accent-blue);
+      padding-left: 14px;
+      color: var(--text-secondary);
+      margin: 12px 0;
+      font-style: italic;
+    }
+    .markdown-body p { margin-bottom: 12px; }
+    .markdown-body ul, .markdown-body ol { margin: 8px 0 12px 24px; }
+
+    /* ==============================================================================
+       4. ALT GİRİŞ KUTUSU VE SOL ALT KÖŞE MODEL SEÇİCİSİ
+       ============================================================================== */
+    .chat-input-wrapper {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 0 20px 20px 20px;
+      background: linear-gradient(180deg, transparent 0%, var(--bg-primary) 35%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .input-box-container {
+      width: 100%;
+      max-width: 840px;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-box-container:focus-within {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Yüklenen Dosya / Görsel Önizleme Şeridi */
+    #attachment-preview-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .preview-thumb {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      object-fit: cover;
+    }
+
+    .preview-file-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12.5px;
+      color: var(--text-primary);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn-remove-attachment {
+      padding: 4px;
+      color: var(--text-muted);
+      border-radius: 4px;
+    }
+    .btn-remove-attachment:hover { color: var(--accent-red); }
+
+    .input-textarea-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    #chat-input {
+      width: 100%;
+      min-height: 24px;
+      max-height: 180px;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.5;
+      resize: none;
+    }
+
+    #chat-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 8px;
+      position: relative;
+    }
+
+    /* SOL ALT KÖŞE: MODEL SEÇİCİ + DOSYA YÜKLEME + MİKROFON */
+    .input-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .model-selector-btn-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: var(--radius-full);
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .model-selector-btn-inline:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .model-dropdown-inline {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      width: 270px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 100;
+    }
+
+    .model-dropdown-inline.active {
+      display: flex;
+    }
+
+    .model-opt {
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .model-opt:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .model-opt.selected {
+      background-color: var(--bg-tertiary);
+      border-color: var(--accent-blue);
+    }
+
+    .model-opt-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .model-opt-desc {
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    .btn-toolbar-icon {
+      padding: 6px;
+      border-radius: var(--radius-full);
+      color: var(--text-secondary);
+    }
+    .btn-toolbar-icon:hover {
+      color: var(--text-primary);
+      background-color: var(--bg-hover);
+    }
+
+    .btn-toolbar-icon.recording {
+      color: var(--accent-red);
+      animation: pulse 1s infinite;
+    }
+
+    .btn-send-message {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      background: var(--gradient-button);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-send-message:hover:not(:disabled) {
+      background: var(--gradient-button-hover);
+      transform: scale(1.05);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    /* ==============================================================================
+       5. CANVAS KOD & CANLI ÖNİZLEME ALANI
+       ============================================================================== */
+    #canvas-container {
+      width: var(--canvas-width);
+      height: 100%;
+      background-color: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 30;
+    }
+
+    #canvas-container.hidden { display: none !important; }
+    #canvas-container.fullscreen {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9999 !important;
+      border-left: none !important;
+    }
+
+    .canvas-header {
+      height: var(--header-height);
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      background-color: var(--bg-secondary);
+      flex-shrink: 0;
+    }
+
+    .canvas-tabs {
+      display: flex;
+      align-items: center;
+      background-color: var(--bg-tertiary);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+      border: 1px solid var(--border-color);
+    }
+
+    .canvas-tab-btn {
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .canvas-tab-btn.active {
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .canvas-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .canvas-body {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background-color: #0D1117;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #canvas-code-panel {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      overflow: hidden;
+    }
+
+    #canvas-code-textarea {
+      width: 100%;
+      height: 100%;
+      padding: 16px;
+      background-color: #0D1117;
+      color: #E6EDF3;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 13.5px;
+      line-height: 1.6;
+      border: none;
+      outline: none;
+      resize: none;
+      white-space: pre;
+    }
+
+    #canvas-preview-panel {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      background-color: #FFFFFF;
+      display: none;
+    }
+
+    #canvas-preview-panel.active { display: flex; }
+    #canvas-preview-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: #FFFFFF;
+    }
+
+    .canvas-ai-bar {
+      padding: 12px 16px;
+      background-color: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .canvas-ai-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 4px 6px 4px 12px;
+    }
+
+    #canvas-ai-prompt {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-primary);
+      font-size: 13.5px;
+      padding: 6px 0;
+    }
+
+    /* ==============================================================================
+       6. HESAP AYARLARI MODALI (SADECE HESAP GİRİŞ / KAYIT)
+       ============================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+    }
+
+    .modal-backdrop.active { opacity: 1; visibility: visible; }
+
+    .modal-container {
+      width: 100%;
+      max-width: 460px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 75vh;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background-color: var(--bg-tertiary);
+    }
+
+    .input-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-field label {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .input-field input {
+      padding: 9px 12px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 13.5px;
+      outline: none;
+    }
+
+    .input-field input:focus { border-color: var(--accent-blue); }
+
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      min-width: 260px;
+      max-width: 380px;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      animation: toastIn 0.3s forwards;
+    }
+
+    .toast.success { border-left: 4px solid var(--accent-green); }
+    .toast.error { border-left: 4px solid var(--accent-red); }
+    .toast.info { border-left: 4px solid var(--accent-blue); }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      #sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100%;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+      }
+      #sidebar.open { left: 0; }
+      #canvas-container {
+        position: fixed;
+        right: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+      #canvas-container.active { right: 0 !important; }
+      .suggestion-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+
+    <!-- SOL YAN MENÜ (SIDEBAR) -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="brand-wrapper">
+          <svg class="brand-logo" viewBox="0 0 100 100" fill="none">
+            <defs>
+              <linearGradient id="bLogoG" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3B82F6"/>
+                <stop offset="50%" stop-color="#8B5CF6"/>
+                <stop offset="100%" stop-color="#EC4899"/>
+              </linearGradient>
+            </defs>
+            <polygon points="50,6 90,28 90,72 50,94 10,72 10,28" stroke="url(#bLogoG)" stroke-width="6" fill="rgba(15, 23, 42, 0.9)"/>
+            <circle cx="50" cy="50" r="10" fill="url(#bLogoG)"/>
+            <path d="M38 34 H52 C58 34 63 38 63 43 C63 47 60 49 56 50 C61 51 65 55 65 60 C65 66 60 70 52 70 H38 V34 Z" stroke="url(#bLogoG)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+          </svg>
+          <div>
+            <div class="brand-name gradient-text">BINDEX</div>
+            <div class="brand-slogan">Doğruyu Bilir.</div>
+          </div>
+        </a>
+        <button id="btn-toggle-sidebar" title="Menüyü Daralt" style="padding:6px;">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="sidebar-actions">
+        <button id="btn-new-chat" class="btn-new-chat">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Yeni Sohbet
+        </button>
+
+        <div class="search-box">
+          <svg class="icon search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="history-search" placeholder="Sohbetlerde ara..." autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Sohbet Listesi -->
+      <div class="sidebar-history" id="history-container"></div>
+
+      <!-- GÜNLÜK MODEL KOTALARI KARTI (Yan Menü) -->
+      <div class="quota-section">
+        <div class="quota-header-row">
+          <span>GÜNLÜK MODEL KOTALARI</span>
+          <span style="font-size:10px;color:var(--accent-purple);" title="00:00 TSİ Sıfırlanır">00:00 TSİ</span>
+        </div>
+
+        <div class="quota-item" id="quota-item-bindex-1.0" onclick="QuotaManager.switchModel('bindex-1.0')">
+          <div class="quota-name-row">
+            <span>Bindex 1.0</span>
+            <span id="quota-label-bindex-1.0">30/30</span>
+          </div>
+          <div class="quota-progress-track">
+            <div class="quota-progress-bar" id="quota-bar-bindex-1.0" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="quota-item" id="quota-item-bindex-1.1" onclick="QuotaManager.switchModel('bindex-1.1')">
+          <div class="quota-name-row">
+            <span>Bindex 1.1</span>
+            <span id="quota-label-bindex-1.1">15/15</span>
+          </div>
+          <div class="quota-progress-track">
+            <div class="quota-progress-bar" id="quota-bar-bindex-1.1" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="quota-item" id="quota-item-bindex-1.2" onclick="QuotaManager.switchModel('bindex-1.2')">
+          <div class="quota-name-row">
+            <span>Bindex 1.2</span>
+            <span id="quota-label-bindex-1.2">10/10</span>
+          </div>
+          <div class="quota-progress-track">
+            <div class="quota-progress-bar" id="quota-bar-bindex-1.2" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="quota-item" id="quota-item-bindex-1.3" onclick="QuotaManager.switchModel('bindex-1.3')">
+          <div class="quota-name-row">
+            <span>Bindex 1.3 Beta</span>
+            <span id="quota-label-bindex-1.3">5/5</span>
+          </div>
+          <div class="quota-progress-track">
+            <div class="quota-progress-bar" id="quota-bar-bindex-1.3" style="width: 100%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alt Profil / Hesap Ayarları Butonu -->
+      <div class="sidebar-footer">
+        <button id="btn-open-settings" style="display:flex;align-items:center;gap:10px;padding:6px;border-radius:6px;width:100%;">
+          <div id="user-avatar-badge" style="width:32px;height:32px;border-radius:50%;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;">Y</div>
+          <div style="display:flex;flex-direction:column;text-align:left;overflow:hidden;flex:1;">
+            <span id="user-display-name" style="font-size:13.5px;font-weight:600;color:var(--text-primary);">Hesap Ayarları</span>
+            <span id="user-display-sub" style="font-size:11px;color:var(--text-muted);">Giriş Yap / Yönet</span>
+          </div>
+          <svg class="icon" viewBox="0 0 24 24" style="color:var(--text-muted);"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ORTA SOHBET ALANI -->
+    <main id="main-chat-area">
+      <!-- Üst Bar -->
+      <header class="chat-topbar">
+        <div class="topbar-left">
+          <button id="btn-mobile-sidebar" class="btn-hist-act" style="display:none;">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <span style="font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-0.2px;">
+            Bindex AI Workspace
+          </span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button id="btn-toggle-theme" title="Koyu/Açık Tema" style="padding:6px;border-radius:6px;color:var(--text-secondary);">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </button>
+          <button id="btn-export-chat" title="Sohbeti Markdown Olarak İndir" style="padding:6px;border-radius:6px;color:var(--text-secondary);">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Mesajlar Akış Alanı -->
+      <div id="messages-scroll-area">
+        <div class="messages-inner-container" id="messages-container">
+          <!-- Karşılama Ekranı -->
+          <div class="welcome-screen" id="welcome-screen">
+            <svg class="welcome-logo" viewBox="0 0 100 100" fill="none">
+              <defs>
+                <linearGradient id="wLogoG" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#3B82F6"/>
+                  <stop offset="50%" stop-color="#8B5CF6"/>
+                  <stop offset="100%" stop-color="#EC4899"/>
+                </linearGradient>
+              </defs>
+              <polygon points="50,6 90,28 90,72 50,94 10,72 10,28" stroke="url(#wLogoG)" stroke-width="5" fill="rgba(15, 23, 42, 0.9)"/>
+              <circle cx="50" cy="50" r="11" fill="url(#wLogoG)"/>
+              <path d="M38 34 H52 C58 34 63 38 63 43 C63 47 60 49 56 50 C61 51 65 55 65 60 C65 66 60 70 52 70 H38 V34 Z" stroke="url(#wLogoG)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+            </svg>
+            <h1 class="welcome-title">Bindex'e Hoş Geldiniz</h1>
+            <p class="welcome-slogan">"Diğerleri tahmin eder, Bindex doğruyu bilir."</p>
+
+            <div class="suggestion-grid">
+              <div class="suggestion-card" data-prompt="HTML, CSS ve JavaScript kullanarak modern, neon animasyonlu bir hava durumu widget arayüzü tasarla. Kodunu eksiksiz yaz.">
+                <span class="suggestion-icon">💻</span>
+                <span class="suggestion-title">Web Arayüzü & Canlı Canvas</span>
+                <span class="suggestion-desc">HTML/CSS/JS ile neon animasyonlu widget oluştur ve canlı test et.</span>
+              </div>
+              <div class="suggestion-card" data-prompt="Python ile veri analizi ve makine öğrenimi için eksiksiz bir regresyon modeli ve görselleştirme scripti yaz.">
+                <span class="suggestion-icon">⚡</span>
+                <span class="suggestion-title">Python Algoritması Geliştir</span>
+                <span class="suggestion-desc">Veri analizi, optimizasyon ve temiz mimarili Python kodu yaz.</span>
+              </div>
+              <div class="suggestion-card" data-prompt="Yükleyeceğim görseli veya dosyayı detaylıca analiz et ve bana profesyonel içgörüler sun.">
+                <span class="suggestion-icon">📎</span>
+                <span class="suggestion-title">Dosya ve Görsel Analizi</span>
+                <span class="suggestion-desc">Ataş butonuna basıp fotoğraf veya dosya yükleyerek analiz ettir.</span>
+              </div>
+              <div class="suggestion-card" data-prompt="Schrödinger dalga denklemini ve kuantum tünelleme prensibini matematiksel KaTeX formülleriyle adım adım açıkla.">
+                <span class="suggestion-icon">🔬</span>
+                <span class="suggestion-title">Bilimsel Analiz & KaTeX</span>
+                <span class="suggestion-desc">Kuantum mekaniği formüllerini kusursuz matematik notasyonuyla incele.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alt Mesaj Giriş Barı -->
+      <div class="chat-input-wrapper">
+        <div class="input-box-container">
+          <!-- Yüklenen Dosya Önizleme Çubuğu -->
+          <div id="attachment-preview-bar">
+            <img id="attachment-preview-thumb" class="preview-thumb" style="display:none;" alt="Önizleme">
+            <div id="attachment-name-text" class="preview-file-badge">Dosya Adı</div>
+            <button class="btn-remove-attachment" onclick="AttachmentManager.clear()" title="Kaldır">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div class="input-textarea-row">
+            <textarea id="chat-input" placeholder="Bindex'e herhangi bir şey sorun veya dosya ekleyin..." rows="1"></textarea>
+          </div>
+
+          <!-- ALT ARAÇ ÇUBUĞU (SOL ALT KÖŞEDE MODEL SEÇİCİSİ) -->
+          <div class="input-toolbar">
+            <div class="input-toolbar-left">
+              <!-- SOL ALT KÖŞE: BINDEX MODEL SEÇİCİSİ (Açılır Menü) -->
+              <div style="position:relative;">
+                <button class="model-selector-btn-inline" id="btn-model-inline" onclick="QuotaManager.toggleDropdown()">
+                  <span style="width:7px;height:7px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 6px var(--accent-green);"></span>
+                  <span id="active-model-inline-name">Bindex 1.0</span>
+                  <span style="font-size:10.5px;color:var(--accent-purple);" id="active-model-inline-quota">(30/30)</span>
+                  <svg class="icon" style="width:12px;height:12px;" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+
+                <!-- Açılır Model Listesi (Yukarı Doğru Açılır) -->
+                <div class="model-dropdown-inline" id="model-dropdown-inline">
+                  <div class="model-opt" id="opt-bindex-1.0" onclick="QuotaManager.switchModel('bindex-1.0')">
+                    <div class="model-opt-title">
+                      <span>Bindex 1.0</span>
+                      <span style="font-size:11px;color:var(--accent-green);" id="drop-quota-bindex-1.0">30 Hak</span>
+                    </div>
+                    <div class="model-opt-desc">Hızlı, kesintisiz yanıtlar & günlük 30 mesaj kotası.</div>
+                  </div>
+
+                  <div class="model-opt" id="opt-bindex-1.1" onclick="QuotaManager.switchModel('bindex-1.1')">
+                    <div class="model-opt-title">
+                      <span>Bindex 1.1</span>
+                      <span style="font-size:11px;color:var(--accent-blue);" id="drop-quota-bindex-1.1">15 Hak</span>
+                    </div>
+                    <div class="model-opt-desc">Gelişmiş analitik düşünce & günlük 15 mesaj kotası.</div>
+                  </div>
+
+                  <div class="model-opt" id="opt-bindex-1.2" onclick="QuotaManager.switchModel('bindex-1.2')">
+                    <div class="model-opt-title">
+                      <span>Bindex 1.2</span>
+                      <span style="font-size:11px;color:var(--accent-purple);" id="drop-quota-bindex-1.2">10 Hak</span>
+                    </div>
+                    <div class="model-opt-desc">Yüksek performans, kodlama & günlük 10 mesaj kotası.</div>
+                  </div>
+
+                  <div class="model-opt" id="opt-bindex-1.3" onclick="QuotaManager.switchModel('bindex-1.3')">
+                    <div class="model-opt-title">
+                      <span>Bindex 1.3 Beta</span>
+                      <span style="font-size:11px;color:var(--accent-pink);" id="drop-quota-bindex-1.3">5 Hak</span>
+                    </div>
+                    <div class="model-opt-desc">En üst seviye muhakeme & günlük 5 mesaj kotası.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DOSYA / GÖRSEL YÜKLEME BUTONU -->
+              <input type="file" id="file-upload-input" accept="image/*,.txt,.pdf,.js,.py,.html,.css,.json,.csv" style="display:none;" onchange="AttachmentManager.handleFileSelect(event)">
+              <button class="btn-toolbar-icon" onclick="document.getElementById('file-upload-input').click()" title="Görsel veya Dosya Ekle">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              </button>
+
+              <!-- MİKROFON İLE SESLİ YAZMA -->
+              <button id="btn-mic-input" class="btn-toolbar-icon" title="Sesle Yazdır (Mikrofon)">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+            </div>
+
+            <!-- SAĞ TARAF: GÖNDER VE DURDUR -->
+            <div style="display:flex;align-items:center;gap:6px;">
+              <button id="btn-send" class="btn-send-message" title="Gönder">
+                <svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+              <button id="btn-stop" class="btn-send-message" style="display:none;background:var(--accent-red);" title="Durdur">
+                <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">
+          Bindex hata yapabilir. Önemli kararları doğrulamayı unutmayın.
+        </div>
+      </div>
+    </main>
+
+    <!-- SAĞ CANVAS / KOD ALANI (Gereksinim 7) -->
+    <section id="canvas-container" class="hidden">
+      <div class="canvas-header">
+        <div class="canvas-tabs">
+          <button id="tab-code-btn" class="canvas-tab-btn active" onclick="Canvas.switchTab('code')">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            Code
+          </button>
+          <button id="tab-preview-btn" class="canvas-tab-btn" onclick="Canvas.switchTab('preview')">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            Preview
+          </button>
+        </div>
+
+        <div class="canvas-controls">
+          <button class="btn-code-action" onclick="Canvas.copyCode()" title="Kopyala">
+            <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Kopyala
+          </button>
+          <button class="btn-code-action" onclick="Canvas.downloadCode()" title="İndir">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            İndir
+          </button>
+          <button class="btn-code-action" onclick="Canvas.toggleFullscreen()" title="Tam Ekran">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+          <button class="btn-code-action" onclick="Canvas.close()" title="Kapat">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="canvas-body">
+        <div id="canvas-code-panel">
+          <textarea id="canvas-code-textarea" spellcheck="false"></textarea>
+        </div>
+        <div id="canvas-preview-panel">
+          <iframe id="canvas-preview-iframe" sandbox="allow-scripts" title="Canlı Önizleme"></iframe>
+        </div>
+      </div>
+
+      <div class="canvas-ai-bar">
+        <div class="canvas-ai-input-wrap">
+          <svg class="icon" viewBox="0 0 24 24" style="color:var(--accent-purple);"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <input type="text" id="canvas-ai-prompt" placeholder="Bindex'e kodu nasıl değiştireceğini söyle (Örn: 'Karanlık temaya çevir ve neon ekle')..." autocomplete="off">
+          <button class="btn-new-chat" style="width:auto;padding:6px 14px;font-size:12.5px;" onclick="Canvas.submitAiEdit()">Güncelle</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- TOAST BİLDİRİMLER -->
+  <div id="toast-container"></div>
+
+  <!-- MODAL: SADECE HESAP AYARLARI (APİ KISMI KALDIRILDI) -->
+  <div class="modal-backdrop" id="modal-settings">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Hesap ve Giriş Ayarları</span>
+        </div>
+        <button class="btn-hist-act" onclick="App.closeModals()">
+          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Aktif Hesap Kartı -->
+        <div style="background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:8px;padding:14px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="modal-user-avatar" style="width:36px;height:36px;border-radius:50%;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;">Y</div>
+            <div>
+              <div id="modal-user-name" style="font-weight:700;font-size:14px;color:var(--text-primary);">Yusuf</div>
+              <div style="font-size:11.5px;color:var(--accent-green);">● Oturum Aktif</div>
+            </div>
+          </div>
+          <button class="btn-code-action" onclick="AccountManager.logout()" style="color:var(--accent-red);">Çıkış Yap</button>
+        </div>
+
+        <!-- Kullanıcı Adı Girişi (Şifresiz ve Kayıtsız) -->
+        <div style="border-top:1px solid var(--border-color);padding-top:14px;display:flex;flex-direction:column;gap:12px;">
+          <span style="font-size:12.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;">KULLANICI DEĞİŞTİR</span>
+          
+          <div class="input-field">
+            <label>Kullanıcı Adı:</label>
+            <input type="text" id="acc-username-input" placeholder="Kullanıcı adınızı yazın (örn: yusuf, admin, ali)..." onkeydown="if(event.key==='Enter')AccountManager.switchUser()">
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:4px;">
+            <button class="btn-new-chat" style="flex:1;" onclick="AccountManager.switchUser()">Giriş Yap</button>
+          </div>
+          <span style="font-size:11.5px;color:var(--text-muted);">* Kayıt veya şifre gerekmez; kullanıcı adınızı yazıp doğrudan giriş yapabilirsiniz.</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-new-chat" style="width:auto;padding:8px 18px;" onclick="App.closeModals()">
+          Kapat
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==============================================================================
+       7. JAVASCRIPT ÇEKİRDEĞİ
+       ============================================================================== */
+  -->
+  <script>
+    /* ==============================================================================
+       1. MERKEZİ APİ ANAHTARI VE KAYITLI HESAPLAR
+       (Sitede kimse göremez, sadece kodun burasından yönetilir!)
+       ============================================================================== */
+        const BINDEX_CONFIG = {
+      // ⬇️ APİ ANAHTARINIZI BURAYA YAZIN:
+      apiKey: "",
+
+      // ⬇️ KODDA TANIMLI KULLANICI ADLARI (Şifresiz, doğrudan kullanıcı adıyla giriş yapılır):
+      allowedUsers: ["admin", "yusuf", "guest"]
+    };
+
+    // --- BINDEX MODEL TANIMLARI & GÜVENLİ YEDEK MODELLER ---
+    const MODEL_DEFINITIONS = {
+      'bindex-1.0': {
+        name: 'Bindex 1.0',
+        badge: 'Hızlı Yanıt (Düşünme: Düşük)',
+        dailyLimit: 30,
+        thinkingLevel: 1,
+        temperature: 0.7,
+        thinkingInstruction: "Düşünme Düzeyi 1: Doğrudan, hızlı ve net cevap ver. Karmaşık adımlara girmeden temel analizi aktar.",
+        apiModel: 'gemma-4',
+        fallbackModels: ['gemma-2-27b-it', 'gemma-2-9b-it', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
+      },
+      'bindex-1.1': {
+        name: 'Bindex 1.1',
+        badge: 'Mantıksal Analiz (Düşünme: Orta)',
+        dailyLimit: 15,
+        thinkingLevel: 2,
+        temperature: 0.5,
+        thinkingInstruction: "Düşünme Düzeyi 2: Orta düzey akıl yürütme uygula. Olayı adım adım analiz et, mantık zincirini kontrol et ve yapılandırılmış özetle sun.",
+        apiModel: 'gemma-4',
+        fallbackModels: ['gemma-2-27b-it', 'gemma-2-9b-it', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
+      },
+      'bindex-1.2': {
+        name: 'Bindex 1.2',
+        badge: 'İleri Akıl Yürütme (Düşünme: Yüksek)',
+        dailyLimit: 10,
+        thinkingLevel: 3,
+        temperature: 0.3,
+        thinkingInstruction: "Düşünme Düzeyi 3: Yüksek akıl yürütme. Derinlemesine neden-sonuç analizi yap, alternatif ihtimalleri değerlendir ve detaylı çıkarım yap.",
+        apiModel: 'gemma-4',
+        fallbackModels: ['gemma-2-27b-it', 'gemma-2-9b-it', 'gemini-1.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash']
+      },
+      'bindex-1.3': {
+        name: 'Bindex 1.3 Beta',
+        badge: 'Ultra Derin Düşünce (Düşünme: Maksimum - Beta)',
+        dailyLimit: 5,
+        thinkingLevel: 4,
+        temperature: 0.2,
+        thinkingInstruction: "Düşünme Düzeyi 4 (Maksimum Derin Düşünce / Ultra Deep Reasoning): Problemi çok boyutlu ele al. Hipotez kur, karşıt senaryoları test et, adım adım zincirleme düşün (Chain-of-Thought) ve en optimal, hatasız çözümü oluştur.",
+        apiModel: 'gemma-4',
+        fallbackModels: ['gemma-2-27b-it', 'gemma-2-9b-it', 'gemini-1.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash']
+      }
+    };
+
+    // --- HESAP YÖNETİCİSİ (AccountManager) ---
+    const AccountManager = {
+      currentUser: null,
+
+      init() {
+        const savedUser = localStorage.getItem('bindex_active_username') || (BINDEX_CONFIG.allowedUsers && BINDEX_CONFIG.allowedUsers[0]) || 'yusuf';
+        this.setUser(savedUser);
+      },
+
+      setUser(username) {
+        const cleanName = (username || 'Misafir').trim();
+        this.currentUser = {
+          username: cleanName.toLowerCase(),
+          name: cleanName
+        };
+        localStorage.setItem('bindex_active_username', this.currentUser.username);
+
+        const badge = document.getElementById('user-avatar-badge');
+        const modalBadge = document.getElementById('modal-user-avatar');
+        const dName = document.getElementById('user-display-name');
+        const mName = document.getElementById('modal-user-name');
+
+        const initial = this.currentUser.name.charAt(0).toUpperCase();
+        if (badge) badge.textContent = initial;
+        if (modalBadge) modalBadge.textContent = initial;
+        if (dName) dName.textContent = this.currentUser.name;
+        if (mName) mName.textContent = `${this.currentUser.name} (@${this.currentUser.username})`;
+      },
+
+      switchUser() {
+        const u = document.getElementById('acc-username-input')?.value.trim();
+        if (!u) {
+          App.showToast('Lütfen bir kullanıcı adı girin.', 'error');
+          return;
+        }
+
+        this.setUser(u);
+        App.showToast(`Kullanıcı değiştirildi: @${u}`, 'success');
+        const inp = document.getElementById('acc-username-input');
+        if (inp) inp.value = '';
+        App.closeModals();
+      },
+
+      logout() {
+        this.setUser('misafir');
+        App.showToast('Misafir kullanıcısına geçildi.', 'info');
+      }
+    };
+
+    // --- DOSYA VE GÖRSEL EKLEME YÖNETİCİSİ (AttachmentManager) ---
+    const AttachmentManager = {
+      attachedData: null,
+
+      handleFileSelect(e) {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const isImg = file.type.startsWith('image/');
+        const reader = new FileReader();
+
+        if (isImg) {
+          reader.onload = (ev) => {
+            const fullBase64 = ev.target.result;
+            const pureBase64 = fullBase64.split(',')[1];
+            this.attachedData = {
+              isImage: true,
+              name: file.name,
+              mimeType: file.type,
+              base64: pureBase64,
+              fullUrl: fullBase64
+            };
+            this.showPreviewBar(true, fullBase64, file.name);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          reader.onload = (ev) => {
+            this.attachedData = {
+              isImage: false,
+              name: file.name,
+              mimeType: file.type || 'text/plain',
+              textContent: ev.target.result
+            };
+            this.showPreviewBar(false, null, file.name);
+          };
+          reader.readAsText(file);
+        }
+      },
+
+      showPreviewBar(isImage, src, name) {
+        const bar = document.getElementById('attachment-preview-bar');
+        const thumb = document.getElementById('attachment-preview-thumb');
+        const nameText = document.getElementById('attachment-name-text');
+
+        if (bar) bar.style.display = 'flex';
+        if (nameText) nameText.textContent = name;
+
+        if (isImage && thumb) {
+          thumb.src = src;
+          thumb.style.display = 'block';
+        } else if (thumb) {
+          thumb.style.display = 'none';
+        }
+
+        App.showToast(`Dosya eklendi: ${name}`, 'info');
+      },
+
+      clear() {
+        this.attachedData = null;
+        const bar = document.getElementById('attachment-preview-bar');
+        const fileInp = document.getElementById('file-upload-input');
+        if (bar) bar.style.display = 'none';
+        if (fileInp) fileInp.value = '';
+      }
+    };
+
+    // --- KOTA VE MODEL YÖNETİCİSİ (QuotaManager) ---
+    const QuotaManager = {
+      activeModelKey: 'bindex-1.0',
+
+      init() {
+        const saved = localStorage.getItem('bindex_active_model');
+        if (saved && MODEL_DEFINITIONS[saved]) {
+          this.activeModelKey = saved;
+        }
+        this.checkDayReset();
+        this.updateUI();
+      },
+
+      checkDayReset() {
+        const now = new Date();
+        const trDate = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
+        const lastDate = localStorage.getItem('bindex_quota_date');
+
+        if (lastDate !== trDate) {
+          const freshUsage = {
+            'bindex-1.0': 0,
+            'bindex-1.1': 0,
+            'bindex-1.2': 0,
+            'bindex-1.3': 0
+          };
+          localStorage.setItem('bindex_model_usage', JSON.stringify(freshUsage));
+          localStorage.setItem('bindex_quota_date', trDate);
+        }
+      },
+
+      getUsage() {
+        this.checkDayReset();
+        try { return JSON.parse(localStorage.getItem('bindex_model_usage') || '{}'); }
+        catch(e) { return {}; }
+      },
+
+      getQuotaStatus(modelKey) {
+        const usage = this.getUsage();
+        const def = MODEL_DEFINITIONS[modelKey];
+        if (!def) return { used: 0, total: 30, remaining: 30, allowed: true };
+
+        const used = usage[modelKey] || 0;
+        const remaining = Math.max(0, def.dailyLimit - used);
+        return { used, total: def.dailyLimit, remaining, allowed: remaining > 0 };
+      },
+
+      consume(modelKey) {
+        this.checkDayReset();
+        const usage = this.getUsage();
+        usage[modelKey] = (usage[modelKey] || 0) + 1;
+        localStorage.setItem('bindex_model_usage', JSON.stringify(usage));
+        this.updateUI();
+      },
+
+      switchModel(modelKey) {
+        if (!MODEL_DEFINITIONS[modelKey]) return;
+        this.activeModelKey = modelKey;
+        localStorage.setItem('bindex_active_model', modelKey);
+        this.closeDropdown();
+        this.updateUI();
+
+        const q = this.getQuotaStatus(modelKey);
+        if (!q.allowed) {
+          App.showToast(`${MODEL_DEFINITIONS[modelKey].name} kotanız dolmuş durumda. Diğer modelleri seçebilirsiniz.`, 'error');
+        } else {
+          App.showToast(`Modele geçildi: ${MODEL_DEFINITIONS[modelKey].name} (Kalan: ${q.remaining}/${q.total})`, 'info');
+        }
+      },
+
+      toggleDropdown() {
+        const menu = document.getElementById('model-dropdown-inline');
+        menu?.classList.toggle('active');
+      },
+
+      closeDropdown() {
+        document.getElementById('model-dropdown-inline')?.classList.remove('active');
+      },
+
+      updateUI() {
+        const curKey = this.activeModelKey;
+        const curDef = MODEL_DEFINITIONS[curKey];
+        const curQuota = this.getQuotaStatus(curKey);
+
+        const inlineNameEl = document.getElementById('active-model-inline-name');
+        const inlineQuotaEl = document.getElementById('active-model-inline-quota');
+        if (inlineNameEl) inlineNameEl.textContent = curDef.name;
+        if (inlineQuotaEl) inlineQuotaEl.textContent = `(${curQuota.remaining}/${curQuota.total})`;
+
+        Object.keys(MODEL_DEFINITIONS).forEach(k => {
+          const q = this.getQuotaStatus(k);
+          const percent = Math.max(0, Math.min(100, (q.remaining / q.total) * 100));
+
+          const label = document.getElementById(`quota-label-${k}`);
+          const bar = document.getElementById(`quota-bar-${k}`);
+          const item = document.getElementById(`quota-item-${k}`);
+          const dropQuota = document.getElementById(`drop-quota-${k}`);
+          const opt = document.getElementById(`opt-${k}`);
+
+          if (label) label.textContent = `${q.remaining}/${q.total}`;
+          if (bar) {
+            bar.style.width = `${percent}%`;
+            bar.className = 'quota-progress-bar';
+            if (q.remaining === 0) bar.classList.add('exhausted');
+            else if (percent <= 25) bar.classList.add('warning');
+          }
+          if (item) item.classList.toggle('active-model', k === curKey);
+          if (dropQuota) {
+            dropQuota.textContent = `${q.remaining}/${q.total} Hak`;
+            dropQuota.style.color = q.remaining === 0 ? 'var(--accent-red)' : '';
+          }
+          if (opt) opt.classList.toggle('selected', k === curKey);
+        });
+      }
+    };
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#btn-model-inline') && !e.target.closest('#model-dropdown-inline')) {
+        QuotaManager.closeDropdown();
+      }
+    });
+
+    // --- CANVAS KONTROLCÜSÜ ---
+    const Canvas = {
+      currentCode: '',
+      currentLang: 'html',
+      isFullscreen: false,
+
+      open(code, lang = 'html') {
+        this.currentCode = code;
+        this.currentLang = lang.toLowerCase();
+        
+        const container = document.getElementById('canvas-container');
+        const textarea = document.getElementById('canvas-code-textarea');
+        const previewBtn = document.getElementById('tab-preview-btn');
+
+        if (textarea) textarea.value = code;
+        container?.classList.remove('hidden');
+
+        const isWeb = ['html', 'htm', 'javascript', 'js', 'css'].includes(this.currentLang);
+        if (previewBtn) previewBtn.style.display = isWeb ? 'inline-flex' : 'none';
+
+        if (isWeb) this.switchTab('preview');
+        else this.switchTab('code');
+
+        App.showToast('Kod Canvas üzerinde açıldı.', 'success');
+      },
+
+      switchTab(tab) {
+        const codeTab = document.getElementById('tab-code-btn');
+        const prevTab = document.getElementById('tab-preview-btn');
+        const codePanel = document.getElementById('canvas-code-panel');
+        const prevPanel = document.getElementById('canvas-preview-panel');
+
+        if (tab === 'code') {
+          codeTab?.classList.add('active');
+          prevTab?.classList.remove('active');
+          if (codePanel) codePanel.style.display = 'flex';
+          if (prevPanel) prevPanel.classList.remove('active');
+        } else {
+          prevTab?.classList.add('active');
+          codeTab?.classList.remove('active');
+          if (codePanel) codePanel.style.display = 'none';
+          if (prevPanel) prevPanel.classList.add('active');
+          this.renderPreview();
+        }
+      },
+
+      renderPreview() {
+        const iframe = document.getElementById('canvas-preview-iframe');
+        if (!iframe) return;
+
+        let content = this.currentCode;
+        if (this.currentLang === 'javascript' || this.currentLang === 'js') {
+          content = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{background:#0F172A;color:#F8FAFC;font-family:sans-serif;padding:16px;}#log{background:#1E293B;padding:12px;border-radius:6px;font-family:monospace;white-space:pre-wrap;}</style></head><body><h3>JavaScript Çıktısı:</h3><div id="log"></div><script>const _l=document.getElementById('log');const orig=console.log;console.log=(...a)=>{orig(...a);_l.textContent+=a.join(' ')+'\\n';};try{ ${this.currentCode} }catch(e){_l.textContent+='Hata: '+e.message;}</` + `script></body></html>`;
+        }
+
+        iframe.srcdoc = content;
+        if (window.confetti) {
+          confetti({ particleCount: 30, spread: 60, origin: { y: 0.7 } });
+        }
+      },
+
+      async copyCode() {
+        await navigator.clipboard.writeText(this.currentCode);
+        App.showToast('Kod panoya kopyalandı.', 'success');
+      },
+
+      downloadCode() {
+        const ext = { html:'html', javascript:'js', js:'js', python:'py', py:'py', css:'css' }[this.currentLang] || 'txt';
+        const blob = new Blob([this.currentCode], { type: 'text/plain;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `bindex_${Date.now()}.${ext}`;
+        a.click();
+        App.showToast('Dosya indirildi.', 'info');
+      },
+
+      toggleFullscreen() {
+        this.isFullscreen = !this.isFullscreen;
+        document.getElementById('canvas-container')?.classList.toggle('fullscreen', this.isFullscreen);
+      },
+
+      close() {
+        document.getElementById('canvas-container')?.classList.add('hidden');
+        document.getElementById('canvas-container')?.classList.remove('fullscreen');
+        this.isFullscreen = false;
+      },
+
+      async submitAiEdit() {
+        const input = document.getElementById('canvas-ai-prompt');
+        const prompt = input?.value.trim();
+        if (!prompt) return;
+
+        App.showToast('Bindex kodu güncelliyor...', 'info');
+        input.value = '';
+
+        try {
+          const sys = `Sen Bindex Canvas Asistanısın. Aşağıdaki mevcut ${this.currentLang} kodunu kullanıcının isteğine göre güncelle. SADECE tek bir kod bloğu üret.`;
+          const fullPrompt = `MEVCUT KOD:\n\`\`\`${this.currentLang}\n${this.currentCode}\n\`\`\`\n\nİSTENEN DEĞİŞİKLİK:\n${prompt}`;
+          
+          const result = await BindexEngine.generateText(fullPrompt, sys);
+          const blocks = MarkdownHelper.extractCodeBlocks(result);
+          
+          if (blocks.length > 0) {
+            this.currentCode = blocks[0].code;
+            const ta = document.getElementById('canvas-code-textarea');
+            if (ta) ta.value = this.currentCode;
+            this.renderPreview();
+            App.showToast('Kod başarıyla güncellendi!', 'success');
+          } else {
+            this.currentCode = result;
+            this.renderPreview();
+          }
+        } catch(e) {
+          App.showToast('Modele bağlanılamadı, kısa sürede çözülecektir.', 'error');
+        }
+      }
+    };
+
+    // --- MARKDOWN VE KOD AYRIŞTIRICI ---
+    const MarkdownHelper = {
+      extractCodeBlocks(text) {
+        const regex = /```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g;
+        const blocks = [];
+        let m;
+        while ((m = regex.exec(text)) !== null) {
+          blocks.push({ language: (m[1] || 'plaintext').toLowerCase().trim(), code: m[2] });
+        }
+        return blocks;
+      },
+
+      render(raw) {
+        if (!raw) return '';
+        let txt = raw;
+
+        txt = txt.replace(/\$\$([\s\S]*?)\$\$/g, (m, f) => {
+          try { if (window.katex) return `<div class="katex-display">${katex.renderToString(f.trim(), { displayMode: true, throwOnError: false })}</div>`; } catch(e){}
+          return `<pre class="math">${f}</pre>`;
+        });
+        txt = txt.replace(/\$([^\$\n]+)\$/g, (m, f) => {
+          try { if (window.katex) return katex.renderToString(f.trim(), { displayMode: false, throwOnError: false }); } catch(e){}
+          return `<code>${f}</code>`;
+        });
+
+        let html = '';
+        try { html = window.marked ? marked.parse(txt) : txt; }
+        catch(e) { html = txt; }
+
+        html = html.replace(/<pre><code class="language-([a-zA-Z0-9_-]+)">([\s\S]*?)<\/code><\/pre>/g, (m, lang, code) => {
+          const rawCode = code.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+          const enc = encodeURIComponent(rawCode);
+          const isWeb = ['html', 'htm', 'javascript', 'js', 'css', 'python', 'py'].includes(lang.toLowerCase());
+          const canvasBtn = isWeb ? `<button class="btn-code-action btn-open-canvas" onclick="Canvas.open(decodeURIComponent('${enc}'), '${lang}')">⚡ Canvas'ta Aç</button>` : '';
+
+          return `
+            <div class="code-block-container">
+              <div class="code-block-header">
+                <span class="code-language-tag">${lang}</span>
+                <div class="code-block-actions">
+                  ${canvasBtn}
+                  <button class="btn-code-action" onclick="App.copyCode(this, '${enc}')">Kopyala</button>
+                </div>
+              </div>
+              <pre><code class="language-${lang}">${code}</code></pre>
+            </div>
+          `;
+        });
+
+        return html;
+      }
+    };
+
+    // --- BINDEX AI MOTORU (ÇOKLU MODEL, GÖRSEL/DOSYA VE HATA YÖNETİMİ) ---
+    const BindexEngine = {
+      abortCtrl: null,
+
+      getEffectiveApiKey() {
+        return BINDEX_CONFIG.apiKey || localStorage.getItem('bindex_ai_key') || '';
+      },
+
+      async streamChat({ prompt, history = [], attachment = null, onChunk, onDone, onError }) {
+        const apiKey = this.getEffectiveApiKey();
+        if (!apiKey) {
+          throw new Error('Modele bağlanılamadı, kısa sürede çözülecektir.');
+        }
+
+        const modelKey = QuotaManager.activeModelKey;
+        const modelDef = MODEL_DEFINITIONS[modelKey];
+        const quota = QuotaManager.getQuotaStatus(modelKey);
+
+        if (!quota.allowed) {
+          const altKey = Object.keys(MODEL_DEFINITIONS).find(k => QuotaManager.getQuotaStatus(k).allowed);
+          if (altKey) {
+            App.showToast(`${modelDef.name} kotanız (günlük ${modelDef.dailyLimit} mesaj) doldu! Otomatik olarak ${MODEL_DEFINITIONS[altKey].name} modeline aktarılıyorsunuz...`, 'info');
+            QuotaManager.switchModel(altKey);
+            return this.streamChat({ prompt, history, attachment, onChunk, onDone, onError });
+          } else {
+            throw new Error(`Bugün için tüm Bindex modellerinin günlük kotaları doldu. Haklarınız bu gece 00:00 TSİ'de yenilenecektir.`);
+          }
+        }
+
+        const systemInstruction = `Sen Bindex'sin. Slogan: "Diğerleri tahmin eder, Bindex doğruyu bilir."
+Aktif Model: ${modelDef.name}
+${modelDef.thinkingInstruction}
+Doğrudan, tarafsız, zeki ve profesyonel yanıtlar ver. Gereksiz dolambaçlı laflar etme.
+Web, kod veya dosya analiz isteklerinde tam çalışan, hatasız ve açıklamalı çıktılar üret.
+Markdown formatını ve KaTeX formüllerini kusursuz kullan.`;
+
+        this.abortCtrl = new AbortController();
+
+        const contents = [];
+        for (const h of history.slice(-12)) {
+          contents.push({
+            role: h.role === 'model' ? 'model' : 'user',
+            parts: [{ text: h.content }]
+          });
+        }
+
+        const userParts = [];
+        if (attachment) {
+          if (attachment.isImage && attachment.base64) {
+            userParts.push({
+              inlineData: {
+                mimeType: attachment.mimeType,
+                data: attachment.base64
+              }
+            });
+          } else if (attachment.textContent) {
+            userParts.push({
+              text: `[Kullanıcının Yüklediği Dosya: ${attachment.name}]\n\`\`\`\n${attachment.textContent}\n\`\`\`\n\n`
+            });
+          }
+        }
+
+        userParts.push({ text: prompt });
+        contents.push({ role: 'user', parts: userParts });
+
+        const payload = {
+          contents,
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          generationConfig: {
+            temperature: modelDef.temperature || 0.7,
+            maxOutputTokens: 8192
+          }
+        };
+
+        // Model Listesi Sırayla Denenir (Asla 404'te takılmaz)
+        const modelsToTry = [modelDef.apiModel, ...(modelDef.fallbackModels || []), 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+        let lastResponse = null;
+        let successReader = null;
+
+        for (const targetModel of modelsToTry) {
+          try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:streamGenerateContent?alt=sse&key=${apiKey}`;
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+              signal: this.abortCtrl.signal
+            });
+
+            if (res.ok) {
+              lastResponse = res;
+              successReader = res.body.getReader();
+              break;
+            }
+          } catch(e) {
+            // Bir sonraki yedek modeli dene
+          }
+        }
+
+        if (!successReader) {
+          // İstenen hata metni: Teknik hata kodu basılmaz!
+          throw new Error('Modele bağlanılamadı, kısa sürede çözülecektir.');
+        }
+
+        const decoder = new TextDecoder('utf-8');
+        let fullText = '';
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await successReader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            const tr = line.trim();
+            if (tr.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(tr.slice(6));
+                const textChunk = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                if (textChunk) {
+                  fullText += textChunk;
+                  if (onChunk) onChunk(textChunk, fullText);
+                }
+              } catch(e) {}
+            }
+          }
+        }
+
+        QuotaManager.consume(modelKey);
+        if (onDone) onDone(fullText);
+        return fullText;
+      },
+
+      async generateText(prompt, systemInstruction = '') {
+        const apiKey = this.getEffectiveApiKey();
+        const modelDef = MODEL_DEFINITIONS[QuotaManager.activeModelKey];
+        const modelsToTry = [modelDef.apiModel, ...(modelDef.fallbackModels || []), 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+
+        const payload = {
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.2, maxOutputTokens: 8192 }
+        };
+        if (systemInstruction) {
+          payload.systemInstruction = { parts: [{ text: systemInstruction }] };
+        }
+
+        for (const targetModel of modelsToTry) {
+          try {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+              const data = await res.json();
+              return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            }
+          } catch(e) {}
+        }
+
+        return '';
+      },
+
+      stop() {
+        if (this.abortCtrl) {
+          this.abortCtrl.abort();
+          this.abortCtrl = null;
+        }
+      }
+    };
+
+    // --- SOHBET YÖNETİCİSİ (Chat) ---
+    const Chat = {
+      chats: [],
+      activeId: null,
+      isGenerating: false,
+
+      init() {
+        try { this.chats = JSON.parse(localStorage.getItem('bindex_chats') || '[]'); } catch(e){ this.chats = []; }
+        if (this.chats.length > 0) {
+          this.selectChat(this.chats[0].id);
+        } else {
+          this.newChat();
+        }
+        this.renderHistory();
+      },
+
+      newChat() {
+        this.activeId = 'chat_' + Date.now();
+        const chat = {
+          id: this.activeId,
+          title: 'Yeni Sohbet',
+          created: new Date().toISOString(),
+          messages: []
+        };
+        this.chats.unshift(chat);
+        this.save();
+        this.renderHistory();
+        this.renderMessages();
+        Canvas.close();
+      },
+
+      save() {
+        localStorage.setItem('bindex_chats', JSON.stringify(this.chats));
+      },
+
+      getActiveChat() {
+        return this.chats.find(c => c.id === this.activeId);
+      },
+
+      selectChat(id) {
+        this.activeId = id;
+        this.renderHistory();
+        this.renderMessages();
+        Canvas.close();
+      },
+
+      deleteChat(e, id) {
+        e.stopPropagation();
+        if (!confirm('Bu sohbeti silmek istediğinizden emin misiniz?')) return;
+        this.chats = this.chats.filter(c => c.id !== id);
+        this.save();
+        if (this.chats.length === 0) {
+          this.newChat();
+        } else if (this.activeId === id) {
+          this.selectChat(this.chats[0].id);
+        } else {
+          this.renderHistory();
+        }
+      },
+
+      renameChat(e, id, cur) {
+        e.stopPropagation();
+        const n = prompt('Yeni sohbet başlığı:', cur);
+        if (!n || !n.trim()) return;
+        const c = this.chats.find(x => x.id === id);
+        if (c) {
+          c.title = n.trim();
+          this.save();
+          this.renderHistory();
+        }
+      },
+
+      renderHistory(filter = '') {
+        const listEl = document.getElementById('history-container');
+        if (!listEl) return;
+        listEl.innerHTML = '';
+
+        const filtered = filter ? this.chats.filter(c => c.title.toLowerCase().includes(filter.toLowerCase())) : this.chats;
+
+        filtered.forEach(c => {
+          const item = document.createElement('div');
+          item.className = `history-item ${c.id === this.activeId ? 'active' : ''}`;
+          item.onclick = () => this.selectChat(c.id);
+
+          item.innerHTML = `
+            <div class="history-title-wrap">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span class="history-title" title="${c.title}">${c.title}</span>
+            </div>
+            <div class="history-actions">
+              <button class="btn-hist-act" onclick="Chat.renameChat(event, '${c.id}', '${c.title.replace(/'/g, "\\'")}')" title="Yeniden Adlandır">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </button>
+              <button class="btn-hist-act del" onclick="Chat.deleteChat(event, '${c.id}')" title="Sil">
+                <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            </div>
+          `;
+          listEl.appendChild(item);
+        });
+      },
+
+      renderMessages() {
+        const box = document.getElementById('messages-container');
+        const welcome = document.getElementById('welcome-screen');
+        if (!box) return;
+
+        const chat = this.getActiveChat();
+        if (!chat || chat.messages.length === 0) {
+          box.innerHTML = '';
+          if (welcome) {
+            box.appendChild(welcome);
+            welcome.style.display = 'flex';
+          }
+          return;
+        }
+
+        if (welcome) welcome.style.display = 'none';
+        box.innerHTML = '';
+
+        chat.messages.forEach(msg => {
+          this.appendMessageDom(msg.role, msg.content, msg.time, msg.attachment, msg.modelName);
+        });
+
+        this.scrollDown();
+      },
+
+      appendMessageDom(role, content, time = null, attachment = null, modelName = null) {
+        const box = document.getElementById('messages-container');
+        if (!box) return;
+
+        const isUser = role === 'user';
+        const row = document.createElement('div');
+        row.className = `message-row ${isUser ? 'user' : 'model'}`;
+
+        const avatar = isUser
+          ? `<div class="message-avatar user">${(AccountManager.currentUser?.name || 'S').charAt(0).toUpperCase()}</div>`
+          : `<div class="message-avatar model"><svg class="icon" style="color:var(--accent-blue);" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>`;
+
+        let mediaHtml = '';
+        if (attachment) {
+          if (attachment.isImage && attachment.fullUrl) {
+            mediaHtml = `<div class="attached-media-preview"><img src="${attachment.fullUrl}" alt="Ekli Görsel"></div>`;
+          } else if (attachment.name) {
+            mediaHtml = `<div style="font-size:12px;color:var(--accent-blue);margin-bottom:6px;display:flex;align-items:center;gap:4px;"><svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> ${attachment.name}</div>`;
+          }
+        }
+
+        const bodyHtml = isUser ? content.replace(/</g, '&lt;').replace(/\n/g, '<br>') : MarkdownHelper.render(content);
+        const displayModel = modelName || MODEL_DEFINITIONS[QuotaManager.activeModelKey].name;
+
+        const statsHtml = (!isUser) ? `
+          <div class="message-stats-bar">
+            <span>⚡ ${displayModel}</span>
+            ${time ? `<span>⏱️ ${time}</span>` : ''}
+            <button onclick="App.speakText(this, \`${encodeURIComponent(content)}\`)" title="Sesli Oku" style="padding:2px;color:var(--text-muted);">
+              <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            </button>
+            <button onclick="App.copyText(\`${encodeURIComponent(content)}\`)" title="Kopyala" style="padding:2px;color:var(--text-muted);">
+              <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+        ` : '';
+
+        row.innerHTML = `
+          ${!isUser ? avatar : ''}
+          <div class="message-content-wrapper">
+            <div class="message-bubble ${!isUser ? 'markdown-body' : ''}">
+              ${mediaHtml}
+              ${bodyHtml}
+            </div>
+            ${statsHtml}
+          </div>
+          ${isUser ? avatar : ''}
+        `;
+
+        box.appendChild(row);
+      },
+
+      async handleSend() {
+        const input = document.getElementById('chat-input');
+        const text = input?.value.trim();
+        const attached = AttachmentManager.attachedData;
+
+        if ((!text && !attached) || this.isGenerating) return;
+
+        input.value = '';
+        input.style.height = 'auto';
+
+        const chat = this.getActiveChat();
+        if (!chat) return;
+
+        const welcome = document.getElementById('welcome-screen');
+        if (welcome) welcome.style.display = 'none';
+
+        AttachmentManager.clear();
+        this.setGenerating(true);
+        const currentModelName = MODEL_DEFINITIONS[QuotaManager.activeModelKey].name;
+
+        chat.messages.push({ role: 'user', content: text || (attached?.name ? `[Ekli Dosya: ${attached.name}]` : ''), attachment: attached });
+        this.appendMessageDom('user', text || '', null, attached);
+        this.scrollDown();
+
+        const box = document.getElementById('messages-container');
+        const row = document.createElement('div');
+        row.className = 'message-row model';
+        row.innerHTML = `
+          <div class="message-avatar model"><svg class="icon" style="color:var(--accent-blue);" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+          <div class="message-content-wrapper">
+            <div class="message-bubble markdown-body"><span class="streaming-cursor"></span></div>
+          </div>
+        `;
+        box.appendChild(row);
+        const bubble = row.querySelector('.message-bubble');
+
+        const startTime = Date.now();
+        let streamText = '';
+
+        try {
+          await BindexEngine.streamChat({
+            prompt: text || 'Lütfen yüklediğim ekli dosyayı analiz et.',
+            history: chat.messages.slice(0, -1),
+            attachment: attached,
+            onChunk: (chunk) => {
+              streamText += chunk;
+              bubble.innerHTML = MarkdownHelper.render(streamText) + '<span class="streaming-cursor"></span>';
+              this.scrollDown();
+            },
+            onDone: (full) => {
+              const elapsed = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
+              bubble.innerHTML = MarkdownHelper.render(full);
+              chat.messages.push({ role: 'model', content: full, time: elapsed, modelName: currentModelName });
+
+              if (chat.messages.length <= 2) {
+                chat.title = (text || attached?.name || 'Sohbet').slice(0, 32);
+              }
+              this.save();
+              this.renderHistory();
+
+              const blocks = MarkdownHelper.extractCodeBlocks(full);
+              if (blocks.length > 0) {
+                Canvas.open(blocks[0].code, blocks[0].language);
+              }
+
+              this.setGenerating(false);
+              this.scrollDown();
+            },
+            onError: (err) => {
+              // Hata halinde teknik detay gösterilmez, doğrudan istenen metin yazılır
+              bubble.innerHTML = `<span style="color:var(--accent-red);font-weight:500;">Modele bağlanılamadı, kısa sürede çözülecektir.</span>`;
+              this.setGenerating(false);
+            }
+          });
+        } catch(err) {
+          bubble.innerHTML = `<span style="color:var(--accent-red);font-weight:500;">Modele bağlanılamadı, kısa sürede çözülecektir.</span>`;
+          this.setGenerating(false);
+        }
+      },
+
+      setGenerating(val) {
+        this.isGenerating = val;
+        const sendBtn = document.getElementById('btn-send');
+        const stopBtn = document.getElementById('btn-stop');
+        if (sendBtn) sendBtn.style.display = val ? 'none' : 'inline-flex';
+        if (stopBtn) stopBtn.style.display = val ? 'inline-flex' : 'none';
+      },
+
+      scrollDown() {
+        const area = document.getElementById('messages-scroll-area');
+        if (area) area.scrollTop = area.scrollHeight;
+      }
+    };
+
+    // --- SESLİ KOMUT (Speech-to-Text) ---
+    const SpeechHelper = {
+      rec: null,
+      isListening: false,
+
+      init() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRec) return;
+        this.rec = new SpeechRec();
+        this.rec.lang = 'tr-TR';
+        this.rec.continuous = false;
+        this.rec.interimResults = false;
+
+        this.rec.onresult = (e) => {
+          const t = e.results[0][0].transcript;
+          const input = document.getElementById('chat-input');
+          if (input) input.value = (input.value ? input.value + ' ' : '') + t;
+          this.stop();
+        };
+
+        this.rec.onerror = () => this.stop();
+        this.rec.onend = () => this.stop();
+      },
+
+      toggle() {
+        if (!this.rec) {
+          App.showToast('Tarayıcınız ses tanıma desteklemiyor.', 'info');
+          return;
+        }
+        if (this.isListening) this.stop();
+        else this.start();
+      },
+
+      start() {
+        try {
+          this.rec.start();
+          this.isListening = true;
+          document.getElementById('btn-mic-input')?.classList.add('recording');
+          App.showToast('Dinleniyor... Konuşun.', 'info');
+        } catch(e) {}
+      },
+
+      stop() {
+        this.isListening = false;
+        document.getElementById('btn-mic-input')?.classList.remove('recording');
+        try { this.rec.stop(); } catch(e){}
+      }
+    };
+
+    // --- GENEL UYGULAMA KONTROLCÜSÜ (App) ---
+    const App = {
+      init() {
+        const savedTheme = localStorage.getItem('bindex_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        AccountManager.init();
+        QuotaManager.init();
+        SpeechHelper.init();
+        Chat.init();
+        this.setupEvents();
+      },
+
+      setupEvents() {
+        const input = document.getElementById('chat-input');
+        input?.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            Chat.handleSend();
+          }
+        });
+        input?.addEventListener('input', () => {
+          input.style.height = 'auto';
+          input.style.height = Math.min(input.scrollHeight, 180) + 'px';
+        });
+
+        document.getElementById('btn-send')?.addEventListener('click', () => Chat.handleSend());
+        document.getElementById('btn-stop')?.addEventListener('click', () => {
+          BindexEngine.stop();
+          Chat.setGenerating(false);
+          this.showToast('Yanıt durduruldu.', 'info');
+        });
+
+        document.getElementById('btn-new-chat')?.addEventListener('click', () => Chat.newChat());
+        document.getElementById('btn-mic-input')?.addEventListener('click', () => SpeechHelper.toggle());
+
+        document.getElementById('history-search')?.addEventListener('input', (e) => {
+          Chat.renderHistory(e.target.value);
+        });
+
+        document.getElementById('btn-toggle-theme')?.addEventListener('click', () => this.toggleTheme());
+        document.getElementById('btn-open-settings')?.addEventListener('click', () => this.openSettings());
+
+        document.getElementById('btn-toggle-sidebar')?.addEventListener('click', () => {
+          document.getElementById('sidebar')?.classList.toggle('collapsed');
+        });
+
+        document.querySelectorAll('.suggestion-card').forEach(c => {
+          c.addEventListener('click', () => {
+            const p = c.dataset.prompt;
+            if (input && p) {
+              input.value = p;
+              Chat.handleSend();
+            }
+          });
+        });
+
+        document.getElementById('btn-export-chat')?.addEventListener('click', () => this.exportCurrentChat());
+      },
+
+      toggleTheme() {
+        const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('bindex_theme', next);
+        document.documentElement.setAttribute('data-theme', next);
+        this.showToast(`${next === 'dark' ? 'Koyu' : 'Açık'} temaya geçildi.`, 'info');
+      },
+
+      openSettings() {
+        document.getElementById('modal-settings')?.classList.add('active');
+      },
+
+      exportCurrentChat() {
+        const chat = Chat.getActiveChat();
+        if (!chat || chat.messages.length === 0) {
+          this.showToast('Dışa aktarılacak mesaj yok.', 'info');
+          return;
+        }
+        let md = `# ${chat.title}\n*Bindex AI Platform Sohbet Kaydı - ${new Date().toLocaleDateString('tr-TR')}*\n\n---\n\n`;
+        chat.messages.forEach(m => {
+          md += `### ${m.role === 'user' ? 'Kullanıcı' : 'Bindex'}\n${m.content}\n\n`;
+        });
+        const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${chat.title.replace(/[^a-z0-9]/gi, '_')}.md`;
+        a.click();
+        this.showToast('Sohbet Markdown olarak indirildi.', 'success');
+      },
+
+      closeModals() {
+        document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
+      },
+
+      showToast(msg, type = 'info') {
+        const box = document.getElementById('toast-container');
+        if (!box) return;
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        t.textContent = msg;
+        box.appendChild(t);
+        setTimeout(() => t.remove(), 3500);
+      },
+
+      async copyCode(btn, enc) {
+        await navigator.clipboard.writeText(decodeURIComponent(enc));
+        const orig = btn.textContent;
+        btn.textContent = '✓ Kopyalandı';
+        btn.style.color = 'var(--accent-green)';
+        setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+      },
+
+      async copyText(enc) {
+        await navigator.clipboard.writeText(decodeURIComponent(enc));
+        this.showToast('Metin kopyalandı.', 'success');
+      },
+
+      speakText(btn, enc) {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const text = decodeURIComponent(enc);
+        const ut = new SpeechSynthesisUtterance(text);
+        ut.lang = 'tr-TR';
+        ut.rate = 1.05;
+        window.speechSynthesis.speak(ut);
+        this.showToast('Sesli okuma başlatıldı.', 'info');
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => App.init());
+  </script>
+</body>
+</html>
