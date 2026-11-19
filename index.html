@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bindex AI NEW 1.3 BETA IS NOW ONLINE</title>
+  <title>Bindex – Profesyonel Yapay Zekâ Platformu</title>
   <meta name="description" content="Diğerleri tahmin eder, Bindex doğruyu bilir. Profesyonel, modern, hızlı ve bağımsız AI platformu.">
 
   <!-- Harici CDN Kütüphaneleri -->
@@ -1616,8 +1616,8 @@
         thinkingLevel: 1,
         temperature: 0.7,
         thinkingInstruction: "Düşünme Düzeyi 1: Doğrudan, hızlı ve net cevap ver. Karmaşık adımlara girmeden temel analizi aktar.",
-        apiModel: 'gemma-4',
-        fallbackModels: ['gemma-2-27b-it', 'gemma-2-9b-it', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
+        apiModel: 'gemini-2.5-flash',
+        fallbackModels: ['gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemma-4-26b-a4b-it']
       },
       'bindex-1.1': {
         name: 'Bindex 1.1',
@@ -1626,8 +1626,8 @@
         thinkingLevel: 2,
         temperature: 0.5,
         thinkingInstruction: "Düşünme Düzeyi 2: Orta düzey akıl yürütme uygula. Olayı adım adım analiz et, mantık zincirini kontrol et ve yapılandırılmış özetle sun.",
-        apiModel: 'gemma-4',
-        fallbackModels: ['gemma-2-27b-it', 'gemma-2-9b-it', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash']
+        apiModel: 'gemini-2.5-flash',
+        fallbackModels: ['gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemma-4-26b-a4b-it']
       },
       'bindex-1.2': {
         name: 'Bindex 1.2',
@@ -1636,8 +1636,8 @@
         thinkingLevel: 3,
         temperature: 0.3,
         thinkingInstruction: "Düşünme Düzeyi 3: Yüksek akıl yürütme. Derinlemesine neden-sonuç analizi yap, alternatif ihtimalleri değerlendir ve detaylı çıkarım yap.",
-        apiModel: 'gemma-4',
-        fallbackModels: ['gemma-2-27b-it', 'gemma-2-9b-it', 'gemini-1.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash']
+        apiModel: 'gemini-2.5-flash',
+        fallbackModels: ['gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemma-4-31b-it']
       },
       'bindex-1.3': {
         name: 'Bindex 1.3 Beta',
@@ -1646,8 +1646,8 @@
         thinkingLevel: 4,
         temperature: 0.2,
         thinkingInstruction: "Düşünme Düzeyi 4 (Maksimum Derin Düşünce / Ultra Deep Reasoning): Problemi çok boyutlu ele al. Hipotez kur, karşıt senaryoları test et, adım adım zincirleme düşün (Chain-of-Thought) ve en optimal, hatasız çözümü oluştur.",
-        apiModel: 'gemma-4',
-        fallbackModels: ['gemma-2-27b-it', 'gemma-2-9b-it', 'gemini-1.5-pro', 'gemini-2.5-flash', 'gemini-2.0-flash']
+        apiModel: 'gemini-2.5-flash',
+        fallbackModels: ['gemini-flash-latest', 'gemini-2.5-flash-lite', 'gemma-4-31b-it']
       }
     };
 
@@ -2063,7 +2063,19 @@
       abortCtrl: null,
 
       getEffectiveApiKey() {
-        return BINDEX_CONFIG.apiKey || localStorage.getItem('bindex_ai_key') || '';
+        let key = (BINDEX_CONFIG.apiKey || localStorage.getItem('bindex_ai_key') || '').trim();
+        if (!key) return '';
+
+        // Otomatik Base64 çözücü: Eğer kullanıcı Base64 ile kodlamışsa çözer
+        if (!key.startsWith('AQ.') && !key.startsWith('AIzaSy')) {
+          try {
+            const decoded = atob(key).trim();
+            if (decoded.startsWith('AQ.') || decoded.startsWith('AIzaSy')) {
+              key = decoded;
+            }
+          } catch(e) {}
+        }
+        return key;
       },
 
       async streamChat({ prompt, history = [], attachment = null, onChunk, onDone, onError }) {
