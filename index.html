@@ -1216,43 +1216,7 @@
       .suggestion-grid { grid-template-columns: 1fr; }
     }
   
-    /* --- BINDEX PREMIUM & SOHBET BAŞLIKLARI STİLLERİ --- */
-    .premium-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 7px;
-      font-size: 10.5px;
-      font-weight: 700;
-      border-radius: 4px;
-      background: linear-gradient(135deg, #F59E0B, #D97706);
-      color: #FFF;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
-    }
-    .model-opt.locked {
-      position: relative;
-      cursor: pointer;
-    }
-    .model-opt.locked:hover {
-      border-color: rgba(245, 158, 11, 0.4);
-    }
-    .card-input-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .payment-summary-box {
-      background: var(--bg-tertiary);
-      border: 1px dashed var(--accent-purple);
-      border-radius: 8px;
-      padding: 12px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 6px;
-    }
+    /* --- SOHBET BAŞLIKLARI STİLLERİ --- */
     .header-chat-title-wrap {
       display: flex;
       align-items: center;
@@ -1275,16 +1239,7 @@
       color: var(--accent-blue);
       text-decoration: underline;
     }
-    .user-premium-tag {
-      font-size: 10.5px;
-      color: #F59E0B;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-
-  </style>
+</style>
 </head>
 <body>
 
@@ -1619,76 +1574,6 @@
 
   <!-- MODAL: SADECE HESAP AYARLARI (APİ KISMI KALDIRILDI) -->
   
-  <!-- MODAL: BINDEX PREMIUM (1 TL / AY KART GİRİŞİ) -->
-  <div class="modal-backdrop" id="modal-premium">
-    <div class="modal-container" style="max-width: 460px;">
-      <div class="modal-header">
-        <div class="modal-title" style="color: #F59E0B;">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-          <span>Bindex Premium'a Geçin</span>
-        </div>
-        <button class="btn-hist-act" onclick="App.closeModals()">
-          <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-
-      <div class="modal-content" style="gap: 14px;">
-        <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(124, 58, 237, 0.15)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 14px;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-weight:700;font-size:15px;color:var(--text-primary);">👑 Bindex Pro & Beta Kilidi</div>
-              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Bindex 1.2 ve Bindex 1.3 Beta modellerine anında erişim.</div>
-            </div>
-            <span class="premium-badge">1.00 ₺ / AY</span>
-          </div>
-          <div style="margin-top:10px;font-size:11.5px;color:var(--text-secondary);display:flex;flex-direction:column;gap:4px;">
-            <div>✨ <b>Bindex 1.2:</b> İleri düzey analitik mantık ve problem çözümü</div>
-            <div>🚀 <b>Bindex 1.3 Beta:</b> Ultra derin akıl yürütme mimarisi</div>
-            <div>⚡ <b>Gemini & Groq:</b> Kesintisiz çift motorlu yedekli akış</div>
-          </div>
-        </div>
-
-        <form id="premium-pay-form" onsubmit="event.preventDefault(); PremiumManager.processPayment();">
-          <div style="display:flex;flex-direction:column;gap:10px;">
-            <div class="input-field">
-              <label>Kart Üzerindeki İsim:</label>
-              <input type="text" id="pay-card-name" placeholder="Örn: Yusuf Demir" required>
-            </div>
-
-            <div class="input-field">
-              <label>Kart Numarası:</label>
-              <input type="text" id="pay-card-number" placeholder="4543 •••• •••• ••••" maxlength="19" oninput="PremiumManager.formatCardNumber(this)" required>
-            </div>
-
-            <div class="card-input-row">
-              <div class="input-field">
-                <label>Son Kullanma:</label>
-                <input type="text" id="pay-card-exp" placeholder="AA/YY" maxlength="5" oninput="PremiumManager.formatExpiry(this)" required>
-              </div>
-              <div class="input-field">
-                <label>CVC / CVV:</label>
-                <input type="password" id="pay-card-cvc" placeholder="•••" maxlength="3" required>
-              </div>
-            </div>
-
-            <div class="payment-summary-box">
-              <span style="font-size:13px;color:var(--text-secondary);">Tahsil Edilecek Tutar:</span>
-              <span style="font-size:16px;font-weight:800;color:var(--accent-green);">1.00 ₺</span>
-            </div>
-
-            <button type="submit" id="btn-submit-premium" class="btn-new-chat" style="background:linear-gradient(135deg, #F59E0B, #7C3AED);margin-top:4px;padding:12px;font-size:14px;font-weight:700;">
-              💳 1 TL Öde ve Kilidi Aç
-            </button>
-            <div style="text-align:center;font-size:11px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;gap:4px;">
-              <svg class="icon" style="width:12px;height:12px;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span>256-Bit SSL Şifreli Güvenli Ödeme Altyapısı</span>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
   <div class="modal-backdrop" id="modal-settings">
     <div class="modal-container">
       <div class="modal-header">
@@ -1761,7 +1646,6 @@
         name: 'Bindex 1.0',
         badge: 'Hızlı Yanıt (Düşünme: Düşük)',
         dailyLimit: 30,
-        isPremium: false,
         thinkingLevel: 1,
         temperature: 0.7,
         thinkingInstruction: "Düşünme Düzeyi 1: Doğrudan, hızlı ve net cevap ver. Karmaşık adımlara girmeden temel analizi aktar."
@@ -1770,7 +1654,6 @@
         name: 'Bindex 1.1',
         badge: 'Mantıksal Analiz (Düşünme: Orta)',
         dailyLimit: 15,
-        isPremium: false,
         thinkingLevel: 2,
         temperature: 0.5,
         thinkingInstruction: "Düşünme Düzeyi 2: Orta düzey akıl yürütme uygula. Olayı adım adım analiz et, mantık zincirini kontrol et ve yapılandırılmış özetle sun."
@@ -1779,7 +1662,6 @@
         name: 'Bindex 1.2',
         badge: 'İleri Akıl Yürütme (Düşünme: Yüksek)',
         dailyLimit: 10,
-        isPremium: true,
         thinkingLevel: 3,
         temperature: 0.3,
         thinkingInstruction: "Düşünme Düzeyi 3: Yüksek akıl yürütme. Derinlemesine neden-sonuç analizi yap, alternatif ihtimalleri değerlendir ve detaylı çıkarım yap."
@@ -1788,7 +1670,6 @@
         name: 'Bindex 1.3 Beta',
         badge: 'Ultra Derin Düşünce (Düşünme: Maksimum - Beta)',
         dailyLimit: 5,
-        isPremium: true,
         thinkingLevel: 4,
         temperature: 0.2,
         thinkingInstruction: "Düşünme Düzeyi 4 (Maksimum Derin Düşünce / Ultra Deep Reasoning): Problemi çok boyutlu ele al. Hipotez kur, karşıt senaryoları test et, adım adım zincirleme düşün (Chain-of-Thought) ve en optimal, hatasız çözümü oluştur."
@@ -1910,68 +1791,7 @@
       }
     };
 
-        // --- BINDEX PREMIUM YÖNETİCİSİ (Aylık 1 TL Kart Ödeme Simülasyonu) ---
-    const PremiumManager = {
-      pendingModelKey: null,
-
-      isPremium() {
-        return localStorage.getItem('bindex_premium_active') === 'true';
-      },
-
-      openModal(targetModel = 'bindex-1.2') {
-        this.pendingModelKey = targetModel;
-        document.getElementById('modal-premium')?.classList.add('active');
-      },
-
-      formatCardNumber(input) {
-        let v = input.value.replace(/\D/g, '').slice(0, 16);
-        let formatted = v.match(/.{1,4}/g)?.join(' ') || v;
-        input.value = formatted;
-      },
-
-      formatExpiry(input) {
-        let v = input.value.replace(/\D/g, '').slice(0, 4);
-        if (v.length >= 3) {
-          input.value = v.slice(0, 2) + '/' + v.slice(2);
-        } else {
-          input.value = v;
-        }
-      },
-
-      processPayment() {
-        const btn = document.getElementById('btn-submit-premium');
-        if (btn) {
-          btn.disabled = true;
-          btn.innerHTML = `<span class="loading-spinner"></span> 1 TL Tahsil Ediliyor...`;
-        }
-
-        setTimeout(() => {
-          localStorage.setItem('bindex_premium_active', 'true');
-          localStorage.setItem('bindex_premium_date', new Date().toISOString());
-
-          if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = `💳 1 TL Öde ve Kilidi Aç`;
-          }
-
-          App.closeModals();
-
-          if (typeof confetti === 'function') {
-            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-          }
-
-          App.showToast('🎉 Tebrikler! Bindex Premium aktif edildi. 1.2 ve 1.3 modellerinin kilidi açıldı!', 'success');
-          
-          QuotaManager.updateUI();
-          if (this.pendingModelKey) {
-            QuotaManager.switchModel(this.pendingModelKey);
-            this.pendingModelKey = null;
-          }
-        }, 1200);
-      }
-    };
-
-    // --- KOTA VE MODEL YÖNETİCİSİ (QuotaManager) ---
+        // --- KOTA VE MODEL YÖNETİCİSİ (QuotaManager) ---
     const QuotaManager = {
       activeModelKey: 'bindex-1.0',
 
@@ -2050,7 +1870,6 @@
       },
 
       updateUI() {
-        const isPrem = PremiumManager.isPremium();
         const curKey = this.activeModelKey;
         const curDef = MODEL_DEFINITIONS[curKey] || MODEL_DEFINITIONS['bindex-1.0'];
         const curQuota = this.getQuotaStatus(curKey);
@@ -2060,18 +1879,8 @@
         if (inlineNameEl) inlineNameEl.textContent = curDef.name;
         if (inlineQuotaEl) inlineQuotaEl.textContent = `(${curQuota.remaining}/${curQuota.total})`;
 
-        const userSub = document.getElementById('user-display-sub');
-        if (userSub) {
-          if (isPrem) {
-            userSub.innerHTML = '<span class="user-premium-tag">👑 Premium Üye</span>';
-          } else {
-            userSub.textContent = 'Giriş Yap / Yönet';
-          }
-        }
-
         Object.keys(MODEL_DEFINITIONS).forEach(k => {
           const q = this.getQuotaStatus(k);
-          const def = MODEL_DEFINITIONS[k];
           const percent = Math.max(0, Math.min(100, (q.remaining / q.total) * 100));
 
           const label = document.getElementById(`quota-label-${k}`);
@@ -2080,32 +1889,25 @@
           const dropQuota = document.getElementById(`drop-quota-${k}`);
           const opt = document.getElementById(`opt-${k}`);
 
-          const isLocked = def.isPremium && !isPrem;
-
-          if (label) {
-            label.innerHTML = isLocked ? '<span style="color:#F59E0B;font-size:11px;font-weight:700;">🔒 1 TL</span>' : `${q.remaining}/${q.total}`;
-          }
+          if (label) label.textContent = `${q.remaining}/${q.total}`;
           if (bar) {
-            bar.style.width = isLocked ? '100%' : `${percent}%`;
+            bar.style.width = `${percent}%`;
             bar.className = 'quota-progress-bar';
-            if (isLocked) {
-              bar.style.background = 'linear-gradient(90deg, #F59E0B, #D97706)';
-            } else {
-              bar.style.background = '';
-              if (q.remaining === 0) bar.classList.add('exhausted');
-              else if (percent <= 25) bar.classList.add('warning');
-            }
+            bar.style.background = '';
+            if (q.remaining === 0) bar.classList.add('exhausted');
+            else if (percent <= 25) bar.classList.add('warning');
           }
           if (item) {
             item.classList.toggle('active-model', k === curKey);
-            item.classList.toggle('locked', isLocked);
+            item.classList.remove('locked');
           }
           if (dropQuota) {
-            dropQuota.innerHTML = isLocked ? '<span style="color:#F59E0B;font-weight:700;">🔒 1 TL / Ay</span>' : `${q.remaining}/${q.total} Hak`;
+            dropQuota.textContent = `${q.remaining}/${q.total} Hak`;
+            dropQuota.style.color = q.remaining === 0 ? 'var(--accent-red)' : '';
           }
           if (opt) {
             opt.classList.toggle('selected', k === curKey);
-            opt.classList.toggle('locked', isLocked);
+            opt.classList.remove('locked');
           }
         });
       }
@@ -2301,7 +2103,7 @@
         if (!quota.allowed) {
           const altKey = Object.keys(MODEL_DEFINITIONS).find(k => {
             const def = MODEL_DEFINITIONS[k];
-            if (def.isPremium && !PremiumManager.isPremium()) return false;
+            
             return QuotaManager.getQuotaStatus(k).allowed;
           });
           if (altKey) {
@@ -2612,6 +2414,26 @@ ${attachment.textContent}
 
       getActiveChat() {
         return this.chats.find(c => c.id === this.activeId);
+      },
+
+      promptRenameActive() {
+        const chat = this.getActiveChat();
+        if (!chat) return;
+        const n = prompt('Sohbet Başlığını Girin:', chat.title || 'Yeni Sohbet');
+        if (n && n.trim()) {
+          chat.title = n.trim().slice(0, 40);
+          this.save();
+          this.renderHistory();
+          this.updateHeaderTitle();
+        }
+      },
+
+      updateHeaderTitle() {
+        const chat = this.getActiveChat();
+        const titleEl = document.getElementById('active-chat-title');
+        if (titleEl) {
+          titleEl.textContent = (chat && chat.title) ? chat.title : 'Yeni Sohbet';
+        }
       },
 
       selectChat(id) {
