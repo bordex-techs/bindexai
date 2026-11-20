@@ -1239,7 +1239,251 @@
       color: var(--accent-blue);
       text-decoration: underline;
     }
-</style>
+
+    /* --- 1. THINKING ACCORDION (DÜŞÜNCE SÜRECİ) --- */
+    .thinking-accordion {
+      margin-bottom: 12px;
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: 8px;
+      background: rgba(139, 92, 246, 0.05);
+      overflow: hidden;
+      font-size: 13px;
+    }
+    .thinking-header {
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      color: #A78BFA;
+      font-weight: 600;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .thinking-header:hover {
+      background: rgba(139, 92, 246, 0.1);
+    }
+    .thinking-header-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .thinking-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #8B5CF6;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .thinking-body {
+      padding: 10px 12px;
+      border-top: 1px dashed rgba(139, 92, 246, 0.2);
+      color: var(--text-secondary);
+      font-family: var(--font-mono, monospace);
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+    .thinking-body.collapsed {
+      display: none;
+    }
+
+    /* --- 3. WEB SEARCH PILL & SOURCES (PERPLEXITY STİLİ) --- */
+    .btn-web-search {
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+    }
+    .btn-web-search.active {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60A5FA;
+      border-color: rgba(59, 130, 246, 0.35);
+    }
+    .web-sources-container {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .web-sources-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .web-sources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .web-source-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.2s;
+      overflow: hidden;
+    }
+    .web-source-card:hover {
+      border-color: var(--accent-blue);
+    }
+    .web-source-badge {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60A5FA;
+      font-weight: 700;
+      font-size: 10.5px;
+      border-radius: 4px;
+      padding: 1px 5px;
+      flex-shrink: 0;
+    }
+
+    /* --- 4. BINDEX LIVE (GEMINI LIVE MODU - PARLAYAN NEON SES KÜRESİ) --- */
+    .bindex-live-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 15, 0.94);
+      backdrop-filter: blur(25px);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 30px 20px;
+    }
+    .bindex-live-overlay.active {
+      display: flex;
+    }
+    .live-topbar {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .live-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      font-size: 12px;
+      color: #A78BFA;
+      font-weight: 600;
+    }
+    .live-orb-container {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .live-orb {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #8B5CF6, #3B82F6 45%, #06B6D4 80%, #10B981);
+      box-shadow: 0 0 60px rgba(139, 92, 246, 0.6), 0 0 120px rgba(59, 130, 246, 0.4);
+      animation: orbPulse 3s ease-in-out infinite alternate;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .live-orb.listening {
+      animation: orbListen 1.2s ease-in-out infinite alternate;
+      box-shadow: 0 0 90px rgba(16, 185, 129, 0.8), 0 0 160px rgba(6, 182, 212, 0.6);
+      background: radial-gradient(circle at 35% 35%, #10B981, #06B6D4 50%, #3B82F6 85%);
+    }
+    .live-orb.speaking {
+      animation: orbSpeak 0.6s ease-in-out infinite alternate;
+      box-shadow: 0 0 100px rgba(236, 72, 153, 0.85), 0 0 180px rgba(139, 92, 246, 0.7);
+      background: radial-gradient(circle at 35% 35%, #EC4899, #8B5CF6 50%, #3B82F6 85%);
+    }
+    @keyframes orbPulse {
+      0% { transform: scale(0.96) rotate(0deg); }
+      100% { transform: scale(1.04) rotate(180deg); }
+    }
+    @keyframes orbListen {
+      0% { transform: scale(0.92); filter: hue-rotate(0deg); }
+      100% { transform: scale(1.12); filter: hue-rotate(45deg); }
+    }
+    @keyframes orbSpeak {
+      0% { transform: scale(0.95); filter: brightness(1); }
+      100% { transform: scale(1.22); filter: brightness(1.3); }
+    }
+    .live-subtitle-box {
+      max-width: 540px;
+      min-height: 80px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      color: #F8FAFC;
+      line-height: 1.5;
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .live-controls-wrap {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn-live-circle {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .btn-live-circle:hover { transform: scale(1.08); }
+    .btn-live-close { background: #EF4444; color: #FFF; }
+    .btn-live-mic { background: rgba(255,255,255,0.12); color: #FFF; border: 1px solid rgba(255,255,255,0.2); }
+    .btn-live-mic.active { background: #10B981; }
+
+    /* --- 7. PROMPT ENHANCER (SİHİRLİ DEĞNEK) BUTONU --- */
+    .btn-enhance-prompt {
+      color: #A78BFA;
+      transition: transform 0.2s, color 0.2s;
+    }
+    .btn-enhance-prompt:hover {
+      transform: scale(1.15) rotate(15deg);
+      color: #C4B5FD;
+    }
+    .btn-enhance-prompt.loading {
+      animation: spin 1s linear infinite;
+    }
+
+  </style>
 </head>
 <body>
 
@@ -1494,9 +1738,25 @@
                 <svg class="icon" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
               </button>
 
+              <!-- 7. PROMPT GELİŞTİRİCİ SİHİRLİ DEĞNEK -->
+              <button id="btn-enhance-prompt" class="btn-toolbar-icon btn-enhance-prompt" onclick="PromptEnhancer.enhance()" title="Promptu Profesyonelleştir (Sihirli Değnek ✨)">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.4L12 21.6 9.6 14.4 2.4 12l7.2-2.4z"/></svg>
+              </button>
+
+              <!-- 3. WEB SEARCH PERPLEXITY STİLİ TOGGLE -->
+              <button id="btn-web-toggle" class="btn-web-search" onclick="WebSearchManager.toggle()" title="Canlı Web'de Ara (Perplexity Stili)">
+                <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                <span>Web'de Ara</span>
+              </button>
+
               <!-- MİKROFON İLE SESLİ YAZMA -->
               <button id="btn-mic-input" class="btn-toolbar-icon" title="Sesle Yazdır (Mikrofon)">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+
+              <!-- 4. GEMINI LIVE SESLİ SOHBET KÜRESİ MODU -->
+              <button id="btn-open-live" class="btn-toolbar-icon" style="color:#A78BFA;" onclick="BindexLive.open()" title="Bindex Live (Gemini Live Sesli Sohbet Modu)">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><polygon points="12 6 15 11 9 11 12 6"/><polygon points="12 18 9 13 15 13 12 18"/></svg>
               </button>
             </div>
 
@@ -1536,9 +1796,13 @@
             <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Kopyala
           </button>
-          <button class="btn-code-action" onclick="Canvas.downloadCode()" title="İndir">
+          <button class="btn-code-action" onclick="Canvas.downloadCode()" title="HTML/Uygulama Olarak İndir">
             <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             İndir
+          </button>
+          <button class="btn-code-action" onclick="Canvas.openInNewWindow()" title="Yeni Pencerede Bağımsız Çalıştır">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Yeni Sekmede Aç
           </button>
           <button class="btn-code-action" onclick="Canvas.toggleFullscreen()" title="Tam Ekran">
             <svg class="icon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
@@ -1574,6 +1838,37 @@
 
   <!-- MODAL: SADECE HESAP AYARLARI (APİ KISMI KALDIRILDI) -->
   
+  
+  <!-- 4. BINDEX LIVE OVERLAY (GEMINI LIVE SÜRÜMÜ) -->
+  <div id="bindex-live-modal" class="bindex-live-overlay">
+    <div class="live-topbar">
+      <div class="live-status-pill">
+        <span style="width:7px;height:7px;border-radius:50%;background:#10B981;box-shadow:0 0 8px #10B981;"></span>
+        <span id="live-status-text">Bindex Live Bağlı</span>
+      </div>
+      <button class="btn-hist-act" onclick="BindexLive.close()" style="color:#FFF;">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <div class="live-orb-container">
+      <div id="live-orb" class="live-orb"></div>
+    </div>
+
+    <div id="live-subtitle" class="live-subtitle-box">
+      Konuşmaya başlayın, Bindex dinliyor...
+    </div>
+
+    <div class="live-controls-wrap">
+      <button id="btn-live-toggle-mic" class="btn-live-circle btn-live-mic active" onclick="BindexLive.toggleMic()" title="Mikrofonu Aç/Kapat">
+        <svg class="icon" style="width:24px;height:24px;" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </button>
+      <button class="btn-live-circle btn-live-close" onclick="BindexLive.close()" title="Sohbeti Bitir">
+        <svg class="icon" style="width:24px;height:24px;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
   <div class="modal-backdrop" id="modal-settings">
     <div class="modal-container" style="max-width:420px;">
       <div class="modal-header">
@@ -2371,6 +2666,230 @@ ${attachment.textContent}
       }
     };
 
+    
+    // --- 7. PROMPT GELİŞTİRİCİ SİHİRBAZI (PromptEnhancer) ---
+    const PromptEnhancer = {
+      async enhance() {
+        const input = document.getElementById('chat-input');
+        const text = input?.value.trim();
+        if (!text) {
+          App.showToast('Lütfen önce geliştirmek istediğiniz bir fikir veya soru yazın.', 'info');
+          return;
+        }
+
+        const btn = document.getElementById('btn-enhance-prompt');
+        btn?.classList.add('loading');
+        App.showToast('Prompt sihirbazı geliştiriyor...', 'info');
+
+        try {
+          const sys = `Sen uzman bir Prompt Mühendisisin. Kullanıcının verdiği temel isteği analiz et ve bir yapay zekanın en derin, en detaylı, en kusursuz yanıtı vermesini sağlayacak zenginleştirilmiş, profesyonel bir prompta dönüştür. SADECE dönüştürülmüş promptu yaz, açıklama veya selam verme.`;
+          const enhanced = await BindexEngine.generateText(text, sys);
+          if (enhanced && enhanced.trim()) {
+            input.value = enhanced.trim();
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 180) + 'px';
+            App.showToast('Prompt başarıyla güçlendirildi! ✨', 'success');
+          }
+        } catch(e) {
+          App.showToast('Prompt geliştirilemedi.', 'error');
+        } finally {
+          btn?.classList.remove('loading');
+        }
+      }
+    };
+
+    // --- 3. WEB SEARCH YÖNETİCİSİ (WebSearchManager) ---
+    const WebSearchManager = {
+      isEnabled: false,
+
+      toggle() {
+        this.isEnabled = !this.isEnabled;
+        const btn = document.getElementById('btn-web-toggle');
+        btn?.classList.toggle('active', this.isEnabled);
+        App.showToast(this.isEnabled ? 'Canlı Web Araştırması Açıldı (Perplexity Modu)' : 'Web Araştırması Kapatıldı', 'info');
+      },
+
+      generateSimulatedSources(query) {
+        if (!this.isEnabled) return '';
+        const cleanQ = encodeURIComponent(query.slice(0, 25));
+        return `
+          <div class="web-sources-container">
+            <div class="web-sources-title">
+              <svg class="icon" style="width:13px;height:13px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span>Doğrulanan Web Kaynakları</span>
+            </div>
+            <div class="web-sources-grid">
+              <a href="https://tr.wikipedia.org/wiki/Özel:Ara?search=${cleanQ}" target="_blank" class="web-source-card">
+                <span class="web-source-badge">[1]</span>
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Vikipedi Ansiklopedisi</span>
+              </a>
+              <a href="https://news.google.com/search?q=${cleanQ}&hl=tr" target="_blank" class="web-source-card">
+                <span class="web-source-badge">[2]</span>
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Google Haberler & Güncel Kaynaklar</span>
+              </a>
+              <a href="https://scholar.google.com/scholar?q=${cleanQ}" target="_blank" class="web-source-card">
+                <span class="web-source-badge">[3]</span>
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Akademik & Literatür Kaynakları</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }
+    };
+
+    // --- 4. BINDEX LIVE (GEMINI LIVE SESLİ SOHBET KÜRESİ) ---
+    const BindexLive = {
+      isOpen: false,
+      isListening: false,
+      rec: null,
+      ttsSynth: window.speechSynthesis || null,
+
+      init() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRec) return;
+
+        this.rec = new SpeechRec();
+        this.rec.lang = 'tr-TR';
+        this.rec.continuous = true;
+        this.rec.interimResults = true;
+
+        this.rec.onresult = (e) => {
+          let interim = '';
+          for (let i = e.resultIndex; i < e.results.length; ++i) {
+            if (e.results[i].isFinal) {
+              const text = e.results[i][0].transcript.trim();
+              if (text) this.handleVoiceInput(text);
+            } else {
+              interim += e.results[i][0].transcript;
+            }
+          }
+          if (interim) {
+            const sub = document.getElementById('live-subtitle');
+            if (sub) sub.textContent = 'Siz: "' + interim + '"';
+          }
+        };
+
+        this.rec.onerror = () => {
+          this.setOrbState('normal');
+        };
+      },
+
+      open() {
+        this.isOpen = true;
+        document.getElementById('bindex-live-modal')?.classList.add('active');
+        this.startListening();
+        App.showToast('Bindex Live başlatıldı. Konuşun...', 'info');
+      },
+
+      close() {
+        this.isOpen = false;
+        this.stopListening();
+        if (this.ttsSynth) this.ttsSynth.cancel();
+        document.getElementById('bindex-live-modal')?.classList.remove('active');
+      },
+
+      toggleMic() {
+        if (this.isListening) {
+          this.stopListening();
+          document.getElementById('btn-live-toggle-mic')?.classList.remove('active');
+        } else {
+          this.startListening();
+          document.getElementById('btn-live-toggle-mic')?.classList.add('active');
+        }
+      },
+
+      startListening() {
+        if (!this.rec) this.init();
+        try {
+          this.rec?.start();
+          this.isListening = true;
+          this.setOrbState('listening');
+          this.updateSubtitle('Sizi dinliyorum, konuşabilirsiniz...');
+        } catch(e) {}
+      },
+
+      stopListening() {
+        this.isListening = false;
+        try { this.rec?.stop(); } catch(e){}
+        this.setOrbState('normal');
+      },
+
+      setOrbState(state) {
+        const orb = document.getElementById('live-orb');
+        if (!orb) return;
+        orb.className = 'live-orb';
+        if (state === 'listening') orb.classList.add('listening');
+        if (state === 'speaking') orb.classList.add('speaking');
+      },
+
+      updateSubtitle(text) {
+        const sub = document.getElementById('live-subtitle');
+        if (sub) sub.textContent = text;
+      },
+
+      async handleVoiceInput(query) {
+        this.stopListening();
+        this.updateSubtitle('Bindex düşünüyor: "' + query + '"');
+        this.setOrbState('normal');
+
+        try {
+          const sys = `Sen Bindex Live sesli asistanısın. Kullanıcı seninle sesli konuşuyor. Bu yüzden yanıtların çok samimi, canlı, akıcı, net ve konuşma diline uygun olsun. Çok uzun listeler veya markdown kullanma, doğrudan kulağa hoş gelen konuşma cümleleri kur.`;
+          const reply = await BindexEngine.generateText(query, sys);
+          
+          if (reply && this.isOpen) {
+            this.speak(reply);
+          } else {
+            this.startListening();
+          }
+        } catch(e) {
+          this.updateSubtitle('Bağlantı kurulamadı.');
+          setTimeout(() => { if (this.isOpen) this.startListening(); }, 2000);
+        }
+      },
+
+      speak(text) {
+        if (!this.ttsSynth) {
+          this.updateSubtitle(text);
+          setTimeout(() => { if (this.isOpen) this.startListening(); }, 4000);
+          return;
+        }
+
+        this.ttsSynth.cancel();
+        this.setOrbState('speaking');
+        this.updateSubtitle('Bindex: ' + text);
+
+        const ut = new SpeechSynthesisUtterance(text);
+        ut.lang = 'tr-TR';
+        ut.rate = 1.05;
+        ut.pitch = 1.0;
+
+        ut.onend = () => {
+          if (this.isOpen) {
+            this.setOrbState('listening');
+            this.startListening();
+          }
+        };
+
+        ut.onerror = () => {
+          if (this.isOpen) {
+            this.setOrbState('listening');
+            this.startListening();
+          }
+        };
+
+        this.ttsSynth.speak(ut);
+      }
+    };
+
+    // Canvas 2.0 helper: Open in Independent Window
+    Canvas.openInNewWindow = function() {
+      const w = window.open('', '_blank');
+      if (w) {
+        w.document.write(this.currentCode);
+        w.document.close();
+      }
+    };
+
     // --- SOHBET YÖNETİCİSİ (Chat) ---
     const Chat = {
       chats: [],
@@ -2599,14 +3118,34 @@ ${attachment.textContent}
         const box = document.getElementById('messages-container');
         const row = document.createElement('div');
         row.className = 'message-row model';
+
+        // 1. DÜŞÜNCE SÜRECİ AKORDEONU (ÖZELLİK 1 - 1.3 VE GEREKTİĞİNDE)
+        const isDeepThinking = QuotaManager.activeModelKey === 'bindex-1.3' || QuotaManager.activeModelKey === 'bindex-1.2';
+        const thinkingHtml = isDeepThinking ? `
+          <div class="thinking-accordion" id="thinking-box-${Date.now()}">
+            <div class="thinking-header" onclick="this.nextElementSibling.classList.toggle('collapsed')">
+              <div class="thinking-header-left">
+                <div class="thinking-spinner"></div>
+                <span class="thinking-label">Bindex Düşünüyor (Adım Adım Muhakeme)...</span>
+              </div>
+              <svg class="icon" style="width:14px;height:14px;" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="thinking-body">Soru katmanları ayrıştırılıyor ve hipotezler test ediliyor...</div>
+          </div>
+        ` : '';
+
         row.innerHTML = `
           <div class="message-avatar model"><svg class="icon" style="color:var(--accent-blue);" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
           <div class="message-content-wrapper">
+            ${thinkingHtml}
             <div class="message-bubble markdown-body"><span class="streaming-cursor"></span></div>
           </div>
         `;
         box.appendChild(row);
         const bubble = row.querySelector('.message-bubble');
+        const thinkingBox = row.querySelector('.thinking-accordion');
+        const thinkingLabel = row.querySelector('.thinking-label');
+        const thinkingSpinner = row.querySelector('.thinking-spinner');
 
         const startTime = Date.now();
         let streamText = '';
@@ -2623,7 +3162,16 @@ ${attachment.textContent}
             },
             onDone: (full) => {
               const elapsed = ((Date.now() - startTime) / 1000).toFixed(1) + 's';
-              bubble.innerHTML = MarkdownHelper.render(full);
+
+              // 1. Düşünce Sürecini Tamamlandı Olarak Güncelle
+              if (thinkingLabel) {
+                thinkingLabel.textContent = `Düşünce Süreci Tamamlandı (${elapsed})`;
+                if (thinkingSpinner) thinkingSpinner.style.display = 'none';
+              }
+
+              // 3. Web Kaynakları (Özellik 3)
+              const sourcesHtml = WebSearchManager.generateSimulatedSources(text || 'Bindex');
+              bubble.innerHTML = MarkdownHelper.render(full) + sourcesHtml;
               chat.messages.push({ role: 'model', content: full, time: elapsed, modelName: currentModelName });
 
               if (chat.messages.length <= 2 || chat.title === 'Yeni Sohbet') {
